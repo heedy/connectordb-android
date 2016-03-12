@@ -1,12 +1,16 @@
 {
-  "name": "ConnectorDB",
+  "name": "connectordb-android",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "react-native start"
+    "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
-    "react-native": "^0.17.0-rc",
-    "react-native-icons": "^0.7.0"
+    "connectordb": "0.0.2",
+    "react-native": "^0.19.0",
+    "react-native-floating-label-text-input": "0.0.8",
+    "react-native-material-design": "^0.3.2",
+    "react-redux": "^4.3.0",
+    "redux": "^3.2.1"
   }
 }
