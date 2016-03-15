@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "connectordb": "0.0.2",
-    "react-native": "^0.21.0",
+    "react-native": "^0.22.0-rc2",
     "react-native-floating-label-text-input": "0.0.8",
     "react-native-material-design": "^0.3.2",
     "react-redux": "^4.3.0",
