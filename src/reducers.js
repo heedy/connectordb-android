@@ -5,7 +5,7 @@
 import {InitialState} from './initialstate'
 
 // Reducer performs state modifications for the full app.
-export default function Reducer(state = InitialState, action) {
+export function Reducer(state = InitialState, action) {
     switch (action.type) {
         case 'SET_GATHER':
             return Object.assign({}, state, {gather: action.value});

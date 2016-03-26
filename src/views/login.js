@@ -12,7 +12,7 @@ import React, {
 
 import {Button, Card, Ripple, Checkbox,} from 'react-native-material-design';
 
-class Login extends Component {
+export class Login extends Component {
     onGatherClick() {}
     render() {
         return (
@@ -25,7 +25,7 @@ class Login extends Component {
                         <Image style={{
                             width: 100,
                             height: 100,
-                        }} source={require('./branding/square.png')}/>
+                        }} source={require('../../branding/square.png')}/>
                     </View>
                     <Text style={styles.welcome}>
                         ConnectorDB

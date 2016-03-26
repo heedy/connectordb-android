@@ -1,5 +1,5 @@
 // InitailState is the applicatino state right when you boot it up
-InitialState = {
+const InitialState = {
     gather: true,
     apikey: "",
 }
