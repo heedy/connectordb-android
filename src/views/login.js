@@ -17,6 +17,11 @@ import {connect} from 'react-redux';
 import LogoPicture from '../components/logopicture';
 import GatherCheckbox from '../components/gathercheckbox';
 
+import ServerChooser from '../components/login/serverchooser';
+import PasswordChooser from '../components/login/passwordchooser';
+import UsernameChooser from '../components/login/usernamechooser';
+import DeviceChooser from '../components/login/devicechooser';
+
 const styles = StyleSheet.create({
     container: {
         padding: 10,
@@ -49,8 +54,8 @@ const render = () => (
 
                 <Card.Body>
                     <Text>Log In to ConnectorDB</Text>
-                    <TextInput placeholder="Username" autoCorrect={false} keyboardType="email-address"></TextInput>
-                    <TextInput placeholder="Password" autoCorrect={false} secureTextEntry={true}></TextInput>
+                    <UsernameChooser/>
+                    <PasswordChooser/>
                 </Card.Body>
                 <Card.Actions position="left">
                     <Button text="Login" onPress={() => console.log("I pressed a flat button")}/>
@@ -58,12 +63,16 @@ const render = () => (
             </Card>
 
             <Card>
-
                 <Card.Body>
                     <Text>Server:</Text>
-                    <TextInput placeholder="Server" autoCorrect={false} keyboardType="email-address" value="https://connectordb.com"/>
+                    <ServerChooser/>
                     <Text>Device Name:</Text>
-                    <TextInput placeholder="Device" autoCorrect={false} value="phone"/>
+                    <DeviceChooser/>
+                </Card.Body>
+            </Card>
+            <Card>
+                <Card.Body>
+                    <Text>While Logged Out:</Text>
                     <GatherCheckbox/>
                 </Card.Body>
             </Card>
@@ -72,4 +81,4 @@ const render = () => (
     </ScrollView>
 );
 
-export default connect((state) => ({gather: state.gather}), (dispatch) => ({}))(render);
+export default render;
