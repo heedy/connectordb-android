@@ -7,14 +7,14 @@
   },
   "dependencies": {
     "connectordb": "0.0.2",
-    "react": "^0.14.7",
-    "react-native": "^0.22.0",
+    "react": "0.14.8",
+    "react-native": "0.22.2",
     "react-native-floating-label-text-input": "0.0.8",
-    "react-native-material-design": "^0.3.2",
-    "react-redux": "^4.3.0",
-    "redux": "^3.2.1",
-    "redux-storage": "^4.0.0",
-    "redux-storage-decorator-filter": "^1.1.3",
-    "redux-storage-engine-reactnativeasyncstorage": "^1.0.0"
+    "react-native-material-design": "0.3.3",
+    "react-redux": "4.4.1",
+    "redux": "3.3.1",
+    "redux-storage": "4.0.0",
+    "redux-storage-decorator-filter": "1.1.3",
+    "redux-storage-engine-reactnativeasyncstorage": "1.0.0"
   }
 }
