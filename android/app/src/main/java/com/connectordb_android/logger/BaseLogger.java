@@ -10,7 +10,7 @@ import android.util.Log;
  */
 public abstract class BaseLogger {
 
-    private Context context;
+    protected Context context;
 
     // These are only public for reading. Don't write them. I trust you, because I'm too lazy
     // to write getX()
@@ -68,7 +68,7 @@ public abstract class BaseLogger {
      * setLogTimer sets up the time period between data updates. The value is in milliseconds.
      * There are two special values, which can be implemented in any way you want. If the logger
      * you're implementing does not have specific time period for logging, handle only -1 and 0
-     * which represent off and on respectively.
+     * which represent off and on respectively. This is automatically called when the logger is started up.
      *
      * @param value The time in milliseconds between data updates. -1 means turn off logging
      *              and 0 means "background" - which the individual loggers are free to implement

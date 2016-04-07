@@ -28,8 +28,13 @@ public class LoggerService extends Service {
         Log.d(TAG, "Initializing loggers...");
         loggers = new LinkedList<BaseLogger>();
 
-        // Add all the relevant loggers here
+        /**
+         * Initialize all loggers here. In the future, someone could figure out how to
+         * set up the loggers to auto-register. But this will do for now.
+         */
         loggers.add(new LocationLogger(this));
+        loggers.add(new PluggedInLogger(this));
+        loggers.add(new ScreenOnLogger(this));
 
 
 
