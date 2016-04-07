@@ -48,3 +48,14 @@ Finally, since the menu isn't available in the android virtual device, you'll ne
 ```
 adb shell input keyevent 82
 ```
+
+If running on an external device, you'll need to use adb to forward the debug port:
+```bash
+adb reverse tcp:8081 tcp:8081
+```
+
+### Logging Error
+
+Once you start running the app, you might come across a logging error right after you turn on the app. This is because the app expects to be able to connect to google's fitness apis (from which it gathers several metrics). You will need to create an OAuth API key for your app as seen here: https://developers.google.com/fit/android/get-api-key
+
+You'll need to use the `com.connectordb_android` for the package name, and set up your own debug/release keys to gain api access.
