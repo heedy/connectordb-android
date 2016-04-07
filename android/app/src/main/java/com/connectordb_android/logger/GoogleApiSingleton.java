@@ -25,6 +25,7 @@ import android.content.Intent;
  */
 public class GoogleApiSingleton implements
         GoogleApiClient.OnConnectionFailedListener,GoogleApiClient.ConnectionCallbacks {
+    private static final String TAG = "GoogleApiSingleton";
     public static final int REQUEST_RESOLVE_ERROR = 1001;
     public interface ApiCallback {
         /**
@@ -89,6 +90,7 @@ public class GoogleApiSingleton implements
                 .addScope(Fitness.SCOPE_BODY_READ)
                 .addScope(Fitness.SCOPE_LOCATION_READ).build();
         apiClient.connect();
+        Log.i(TAG, "Connecting to Google APIs...");
     }
 
     @Override
@@ -108,7 +110,7 @@ public class GoogleApiSingleton implements
 
 
             String reason =result.toString();
-            Log.e("ConnectorDB", "Google play services connection failed. Cause: " + reason);
+            Log.e(TAG, "Google play services connection failed. Cause: " + reason);
             apiClient = null;
             apiResolving = false;
 
@@ -126,7 +128,7 @@ public class GoogleApiSingleton implements
     }
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.i("ConnectorDB","Google play services connected.");
+        Log.i(TAG,"Google play services connected.");
         apiResolving = false;
         ListIterator<ApiCallback> iter = callbacks.listIterator();
         while (iter.hasNext()) {
@@ -161,7 +163,6 @@ public class GoogleApiSingleton implements
         if (!apiResolving && apiClient!=null) {
             callback.connected(apiClient);
         } else if (!apiResolving){
-            Log.i("ConnectorDB","Started getGoogleApi");
             startApiConnection(c);
         }
     }
@@ -183,8 +184,7 @@ public class GoogleApiSingleton implements
      */
     public void setupGoogleApi(Activity a,ApiCallback callback) {
         activity = a;
-        Log.i("ConnectorDB","Started setup");
-        getGoogleApi(a,callback);
+        getGoogleApi(a, callback);
     }
 
     /**
@@ -204,7 +204,7 @@ public class GoogleApiSingleton implements
 
             ListIterator<ApiCallback> iter = callbacks.listIterator();
             while (iter.hasNext()) {
-                iter.next().disconnected("Resolution Error "+Integer.toString(resultCode));
+                iter.next().disconnected("API failed to resolve "+Integer.toString(resultCode));
             }
             resolvingError = true;
         }
