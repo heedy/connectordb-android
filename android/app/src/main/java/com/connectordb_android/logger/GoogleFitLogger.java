@@ -9,7 +9,13 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessStatusCodes;
+import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.Field;
+import com.google.android.gms.fitness.request.DataReadRequest;
+import com.google.android.gms.fitness.result.DataReadResult;
+
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -25,6 +31,15 @@ import com.google.android.gms.fitness.data.DataType;
  * to ConnectorDB.
  */
 public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSingleton.ApiCallback, ResultCallback<Status> {
+
+    /**
+     * handleDatapoint is called during synchronization with the google fit API. It is your job to insert each datapoint into
+     * the cache if you want it there. Datapoints are assumed to be ordered
+     *
+     * @param dp the datapoint that was returned.
+     */
+    public abstract void handleDatapoint(DataPoint dp);
+
 
     /**
      * The GoogleFitLogger uses one background process to handle ALL google fit subscriptions,
@@ -46,14 +61,42 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
      */
     private synchronized boolean sync() {
         if (googleApiClient==null || !googleApiClient.isConnected()) {
-            warn("Google API is not connected - can't sync");
+            warn("Google API is not connected - can't sync fit");
             return false;
         }
 
-        log("Syncing");
+        log("Syncing Fit");
 
         // We need to set up the time ranges to query from google's history
         long endTime = timestamp();
+
+        // We keep track of the start time so we don't query for unnecessary datapoints in the future.
+        long startTime = 1;
+        try {
+            startTime = Long.parseLong(kvGet("fit_startTime"));
+        } catch(NumberFormatException nfe) {}
+
+        log("FitSync: Start Time: "+ Long.toString(startTime));
+
+        DataReadRequest readRequest = new DataReadRequest.Builder()
+                .read(dataType)
+                .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+                .build();
+        DataReadResult dataReadResult =
+                Fitness.HistoryApi.readData(googleApiClient, readRequest).await(1, TimeUnit.MINUTES);
+
+        endTime = startTime;
+        for (DataPoint dp : dataReadResult.getDataSet(dataType).getDataPoints()) {
+
+            // Let the specific logger handle the datapoint type
+            handleDatapoint(dp);
+
+            long et= et = dp.getEndTime(TimeUnit.MILLISECONDS);
+            if (et > endTime) {
+                endTime = et;
+            }
+        }
+        kvSet("fit_startTime",Long.toString(endTime));
 
         return true;
     }
@@ -85,7 +128,7 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
         }
         if (logtime > 0) {
             syncIsRunning = true;
-            log("Setting up new sync in "+ Integer.toString(logtime));
+            log("Setting up new sync in "+ Integer.toString(logtime)+"ms");
             handler.postDelayed(new Syncer(),logtime);
         } else {
             syncIsRunning = false;
@@ -107,8 +150,8 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
      * @param dataType the fitness DataType to gather. Make sure that the correct scope for the datatypes
      *                 is enabled in GoogleApiSingleton, otherwise there will be a permissions error
      */
-    GoogleFitLogger(String logName, String streamName, String jsonSchema, Context c,DataType dataType) {
-        super(logName,streamName,jsonSchema,c);
+    GoogleFitLogger(String logName, String streamName, String jsonSchema,String datatype,String icon, Context c,DataType dataType) {
+        super(logName,streamName,jsonSchema,datatype,icon,c);
         this.dataType = dataType;
 
 
@@ -139,7 +182,7 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
         if (status.isSuccess()) {
             if (status.getStatusCode()
                     == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
-                log("Existing subscription for activity detected.");
+                log("Existing subscription detected.");
             } else {
                 log("Successfully subscribed!");
             }

@@ -36,6 +36,8 @@ public class LoggerService extends Service {
         loggers.add(new PluggedInLogger(this));
         loggers.add(new ScreenOnLogger(this));
         loggers.add(new StepLogger(this));
+        loggers.add(new ActivityLogger(this));
+        loggers.add(new HeartLogger(this));
 
 
 

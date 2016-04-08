@@ -1,0 +1,39 @@
+package com.connectordb_android.logger;
+
+import android.content.Context;
+
+import com.google.android.gms.fitness.data.DataPoint;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.Field;
+
+import java.util.concurrent.TimeUnit;
+
+public class ActivityLogger extends GoogleFitLogger {
+
+    ActivityLogger(Context c) {
+        super("ActivityLogger","activity","{\"type\":\"string\"}",
+                "string.person.activity","",c,DataType.TYPE_ACTIVITY_SAMPLE);
+    }
+
+    @Override
+    public void handleDatapoint(DataPoint dp) {
+        double confidence = 0.;
+        String data = "";
+        for(Field field : dp.getDataType().getFields()) {
+            if (field.getName().equals("activity")) {
+                data += dp.getValue(field).asActivity();
+            } else {
+                confidence = dp.getValue(field).asFloat();
+            }
+        }
+        // Only insert the datapoint is > 50% confidence in activity
+        if (confidence > 0.5) {
+            long et = dp.getEndTime(TimeUnit.MILLISECONDS);
+
+            insert(et, "\"" + data + "\"");
+        }
+    }
+
+
+
+}

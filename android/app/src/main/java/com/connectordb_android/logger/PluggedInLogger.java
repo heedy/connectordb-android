@@ -41,7 +41,8 @@ public class PluggedInLogger extends BaseLogger {
 
 
     public PluggedInLogger(Context c) {
-        super("PluggedInLogger","plugged_in","{\"type\":\"boolean\"}",c);
+        super("PluggedInLogger","plugged_in",
+                "boolean","","{\"type\":\"boolean\"}",c);
     }
 
     @Override

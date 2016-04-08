@@ -21,7 +21,8 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
                         "\"accuracy\": {\"type\": \"number\"}," +
                         "\"speed\": {\"type\": \"number\"}," +
                         "\"bearing\": {\"type\": \"number\"}" +
-                        "},\"required\": [\"latitude\",\"longitude\"]}", c);
+                        "},\"required\": [\"latitude\",\"longitude\"]}",
+                "location.gps","",c);
 
         // Logging GPS requires connecting the google play services
         log("Connecting to Google Play services");

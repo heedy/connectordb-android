@@ -23,7 +23,8 @@ public class ScreenOnLogger extends BaseLogger {
 
 
     public ScreenOnLogger(Context c) {
-        super("ScreenOnLogger","screen_on","{\"type\":\"boolean\"}",c);
+        super("ScreenOnLogger","screen_on",
+                "boolean","","{\"type\":\"boolean\"}",c);
     }
 
     @Override

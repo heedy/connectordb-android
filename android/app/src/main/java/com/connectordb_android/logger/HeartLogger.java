@@ -8,10 +8,11 @@ import com.google.android.gms.fitness.data.Field;
 
 import java.util.concurrent.TimeUnit;
 
-public class StepLogger extends GoogleFitLogger {
-    StepLogger(Context c) {
-        super("StepLogger","steps","{\"type\":\"number\"}",
-                "number.stepcount","",c,DataType.TYPE_STEP_COUNT_DELTA);
+public class HeartLogger extends GoogleFitLogger {
+
+    HeartLogger(Context c) {
+        super("HeartLogger","heartrate","{\"type\":\"number\"}",
+                "number.heartrate.person","",c,DataType.TYPE_HEART_RATE_BPM);
     }
 
     @Override
@@ -20,7 +21,7 @@ public class StepLogger extends GoogleFitLogger {
         //so I did it the only way I could figure out: brute force. TL;DR: There is probably a better way of reading datapoints...
         String data = "";
         for (Field field : dp.getDataType().getFields()) {
-            if (field.getName().equals("steps")) {
+            if (field.getName().equals("heart_rate")) {
                 data += dp.getValue(field);
             }
         }

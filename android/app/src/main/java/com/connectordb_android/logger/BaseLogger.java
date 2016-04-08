@@ -25,13 +25,19 @@ public abstract class BaseLogger {
      * @param name is a name to use when logging to the debug log
      * @param streamname is the name to use for the stream
      * @param streamschema is a stringified version of the JSONSchema to use for the stream
+     * @param datatype the ConnectorDB datatype for the stream
+     * @param icon the URLencoded icon to set up for the stream
      * @param c is the context. Because we need to pass around the context to do anything.
      */
-    BaseLogger(String name, String streamname,String streamschema, Context c) {
+    BaseLogger(String name, String streamname,String streamschema,String datatype, String icon, Context c) {
         this.context = c;
         this.name = name;
         this.streamname = streamname;
         this.streamschema = streamschema;
+
+        // Register the stream if it DNE
+        DatapointCache.get(c).ensureStream(streamname,streamschema,datatype,icon);
+
         log("Starting");
     }
 
@@ -52,8 +58,7 @@ public abstract class BaseLogger {
      *                  assumed that the datapoint is correct.
      */
     protected void insert(long timestamp, String datapoint) {
-        Log.d("LOGGING: "+this.streamname,datapoint);
-        // TODO: uhhh... implement this?
+        DatapointCache.get(context).insert(streamname,timestamp,datapoint);
     }
 
     // writes a log debug message
@@ -65,6 +70,26 @@ public abstract class BaseLogger {
     }
     protected void error(String s) {
         Log.e(this.name,s);
+    }
+
+    /**
+     * Allows to get settings for the logger from the app's key-value store.
+     * All keys are prepended with the stream name, so there shouldn't be issues with
+     * interference.
+     * @param key
+     * @return the key's value, and "" if it doesn't exist
+     */
+    protected String kvGet(String key) {
+        return DatapointCache.get(context).getKey(streamname + "_"+key);
+    }
+
+    /**
+     * Set a key value pair for the logger, which will be saved in the app's sqlite db.
+     * @param key
+     * @param value
+     */
+    protected void kvSet(String key,String value) {
+        DatapointCache.get(context).setKey(streamname + "_"+key,value);
     }
 
     /**
