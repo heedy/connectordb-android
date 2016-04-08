@@ -32,6 +32,7 @@ public abstract class BaseLogger {
         this.name = name;
         this.streamname = streamname;
         this.streamschema = streamschema;
+        log("Starting");
     }
 
     /**
@@ -59,9 +60,11 @@ public abstract class BaseLogger {
     protected void log(String s) {
         Log.d(this.name,s);
     }
-
     protected void warn(String s) {
         Log.w(this.name,s);
+    }
+    protected void error(String s) {
+        Log.e(this.name,s);
     }
 
     /**

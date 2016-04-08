@@ -41,7 +41,6 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
     @Override
     public void disconnected(String reason) {
         warn("Google play services connection failed");
-        googleApiClient = null;
     }
 
     @Override
@@ -83,7 +82,7 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         }
 
-        if (googleApiClient!=null) {
+        if (googleApiClient!=null && googleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient,this);
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
         }
@@ -91,9 +90,8 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
     @Override
     public void close() {
         log("Closing");
-        if (googleApiClient.isConnected()) {
+        if (googleApiClient!=null && googleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient,this);
-            googleApiClient.disconnect();
         }
 
     }
