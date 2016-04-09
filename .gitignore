@@ -28,6 +28,9 @@ project.xcworkspace
 .gradle
 local.properties
 
+android/app/app.iml
+android/connectordb_android.iml
+
 # node.js
 #
 node_modules/

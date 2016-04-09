@@ -11,7 +11,6 @@ import java.util.ListIterator;
 public class LoggerService extends Service {
     private static final String TAG = "LoggerService";
 
-    private LinkedList<BaseLogger> loggers;
 
     public LoggerService() {
 
@@ -26,37 +25,29 @@ public class LoggerService extends Service {
     @Override
     public void onCreate() {
         Log.d(TAG, "Initializing loggers...");
-        loggers = new LinkedList<BaseLogger>();
+
+        LoggingManager m = LoggingManager.get();
 
         /**
          * Initialize all loggers here. In the future, someone could figure out how to
          * set up the loggers to auto-register. But this will do for now.
          */
-        loggers.add(new LocationLogger(this));
-        loggers.add(new PluggedInLogger(this));
-        loggers.add(new ScreenOnLogger(this));
-        loggers.add(new StepLogger(this));
-        loggers.add(new ActivityLogger(this));
-        loggers.add(new HeartLogger(this));
+        m.add(new LocationLogger(this));
+        m.add(new PluggedInLogger(this));
+        m.add(new ScreenOnLogger(this));
+        m.add(new StepLogger(this));
+        m.add(new ActivityLogger(this));
+        m.add(new HeartLogger(this));
 
 
 
-        // Initialize the loggers with their specific logTimers
-        ListIterator<BaseLogger> iter = loggers.listIterator();
-        while (iter.hasNext()) {
-            iter.next().setLogTimer(0);
-        }
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG,"Shutting down logger service");
 
-        // Run the close function for all loggers
-        ListIterator<BaseLogger> iter = loggers.listIterator();
-        while (iter.hasNext()) {
-            iter.next().close();
-        }
+        LoggingManager.get().close();
 
     }
 }

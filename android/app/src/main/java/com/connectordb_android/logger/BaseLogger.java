@@ -1,6 +1,7 @@
 package com.connectordb_android.logger;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 /**
@@ -58,7 +59,22 @@ public abstract class BaseLogger {
      *                  assumed that the datapoint is correct.
      */
     protected void insert(long timestamp, String datapoint) {
-        DatapointCache.get(context).insert(streamname,timestamp,datapoint);
+        insert_db(timestamp,datapoint,null);
+    }
+
+    /**
+     * insert_db inserts with an optional database argument
+     *
+     */
+    protected void insert_db(long timestamp, String datapoint, SQLiteDatabase db) {
+        DatapointCache.get(context).insert(streamname,timestamp,datapoint,db);
+    }
+
+    /**
+     * getDB gets a SQLite database for use in transactions
+     */
+    protected SQLiteDatabase getDB() {
+        return DatapointCache.get(context).getDatabase();
     }
 
     // writes a log debug message
@@ -89,7 +105,7 @@ public abstract class BaseLogger {
      * @param value
      */
     protected void kvSet(String key,String value) {
-        DatapointCache.get(context).setKey(streamname + "_"+key,value);
+        DatapointCache.get(context).setKey(streamname + "_"+key,value,null);
     }
 
     /**

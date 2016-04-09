@@ -1,6 +1,6 @@
 package com.connectordb_android.logger;
 
-import android.app.Service;
+import android.content.Context;
 import android.location.Location;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -12,7 +12,7 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
     private LocationRequest locationRequest;
     private GoogleApiClient googleApiClient;
 
-    public LocationLogger(Service c) {
+    public LocationLogger(Context c) {
         super("LocationLogger", "location",
                 "{\"type\":\"object\",\"properties\":" +
                         "{\"latitude\":{\"type\":\"number\"}," +

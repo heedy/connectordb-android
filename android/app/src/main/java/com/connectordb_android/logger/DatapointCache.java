@@ -109,14 +109,15 @@ public class DatapointCache extends SQLiteOpenHelper {
      * Sets the given KV pair in the KV store
      * @param key
      * @param value
+     * @param db optional database to use (for setting in transactions)
      */
-    public void setKey(String key,String value) {
+    public void setKey(String key,String value, SQLiteDatabase db) {
+        if (db==null) db = this.getWritableDatabase();
         if (key.startsWith("__")) {
             Log.v(TAG, "SET " + key + " TO ********");
         }else{
             Log.v(TAG, "SET " + key + " TO " + value);
         }
-        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("key", key);
         contentValues.put("value", value);
@@ -124,8 +125,8 @@ public class DatapointCache extends SQLiteOpenHelper {
     }
 
     public void setCred(String device, String apikey) {
-        this.setKey("devicename",device);
-        this.setKey("__apikey",apikey);
+        this.setKey("devicename",device,null);
+        this.setKey("__apikey",apikey,null);
     }
 
 
@@ -151,18 +152,27 @@ public class DatapointCache extends SQLiteOpenHelper {
     }
 
     /**
+     * For use in transactions - do NOT keep this longer than necessary.
+     * @return a writable sqlite database
+     */
+    public SQLiteDatabase getDatabase() {
+        return this.getWritableDatabase();
+    }
+
+    /**
      * insert the given datapoint into the cache. When isnerting datapoints, make sure to run
      * ensureStream first, to register the stream from which the datapoints come. Otherwise DatapointCache
      * won't recognize the points.
      * @param stream
      * @param timestamp
      * @param data
+     * @param db An optional database (set to null) to use (for transactions)
      * @return whether insert was successful
      */
-    public boolean insert(String stream, long timestamp, String data) {
+    public synchronized boolean insert(String stream, long timestamp, String data, SQLiteDatabase db) {
+        if (db==null) db = this.getWritableDatabase();
         Log.v(TAG, "[s=" + stream + " t=" + Long.toString(timestamp) + " d=" + data + "]");
 
-        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("streamname", stream);
         contentValues.put("timestamp", ((double) timestamp) / 1000.0);
@@ -170,6 +180,8 @@ public class DatapointCache extends SQLiteOpenHelper {
         db.insert("cache", null, contentValues);
         return true;
     }
+
+
 
     //Returns the number of cached datapoints
     public int size() {
@@ -219,14 +231,14 @@ public class DatapointCache extends SQLiteOpenHelper {
     public void disableTimedSync() {
         Log.v(TAG, "Disabling syncer");
         handler.removeCallbacks(syncer);
-        this.setKey("syncenabled", "0");
+        this.setKey("syncenabled", "0",null);
 
     }
 
     public void enableTimedSync(long time) {
         disableTimedSync();
-        this.setKey("syncenabled", "1");
-        this.setKey("syncperiod",Long.toString(time));
+        this.setKey("syncenabled", "1",null);
+        this.setKey("syncperiod",Long.toString(time),null);
         startSyncWait();
     }
 

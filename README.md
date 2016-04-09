@@ -56,6 +56,22 @@ adb reverse tcp:8081 tcp:8081
 
 ### Logging Error
 
-Once you start running the app, you might come across a logging error right after you turn on the app. This is because the app expects to be able to connect to google's fitness apis (from which it gathers several metrics). You will need to create an OAuth API key for your app as seen here: https://developers.google.com/fit/android/get-api-key
+Once you start running the app, you might come across a logging error right after it turns on. This is because the app expects to be able to connect to google's fitness apis (from which it gathers several metrics). You will need to create an OAuth API key for your app as seen here: https://developers.google.com/fit/android/get-api-key
 
-You'll need to use the `com.connectordb_android` for the package name, and set up your own debug/release keys to gain api access.
+You'll need to use `com.connectordb_android` for the package name, and set up your own debug/release keys to gain api access.
+
+# Extending
+
+## Adding New Loggers
+
+The app was made with extensibility in mind. `android/app/src/main/java/com/connectordb_android/logger/` contains all of the data-gathering code. To create a new logger:
+- Extend `BaseLogger` or `GoogleFitLogger` if using google fit data. Use the existing loggers as examples on how this is done
+- Add your logger in `LoggerService.java`, so it is started automatically
+- Add any new permissions you might need in `AndroidManifest.xml`, and add any google APIs you need in `GoogleApiSingleton.java`
+- Submit a pull request! We'd love to include a variety of loggers (with only some on by default)
+
+## Improving the UI
+
+You can directly follow the instructions given in the react native docs. You don't even need to run android studio, as the entire UI is in javascript. If the code seems alien, please look at http://redux.js.org/docs/basics/UsageWithReact.html for a tutorial in React Redux.
+
+I am not a designer, so any help would be greatly appreciated.

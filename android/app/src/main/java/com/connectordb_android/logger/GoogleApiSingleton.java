@@ -1,9 +1,7 @@
 package com.connectordb_android.logger;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;

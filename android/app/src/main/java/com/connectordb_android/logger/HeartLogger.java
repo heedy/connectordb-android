@@ -1,6 +1,7 @@
 package com.connectordb_android.logger;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataType;
@@ -16,7 +17,7 @@ public class HeartLogger extends GoogleFitLogger {
     }
 
     @Override
-    public void handleDatapoint(DataPoint dp) {
+    public void handleDatapoint(SQLiteDatabase db, DataPoint dp) {
         //I didn't look too hard, since fuck spending more than 20 seconds to figure out how to read a damn datapoint,
         //so I did it the only way I could figure out: brute force. TL;DR: There is probably a better way of reading datapoints...
         String data = "";
@@ -28,7 +29,7 @@ public class HeartLogger extends GoogleFitLogger {
         long et = dp.getEndTime(TimeUnit.MILLISECONDS);
 
 
-        insert(et, data);
+        insert_db(et, data,db);
     }
 
 

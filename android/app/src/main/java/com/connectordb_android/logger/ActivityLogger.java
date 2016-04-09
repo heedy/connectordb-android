@@ -1,6 +1,7 @@
 package com.connectordb_android.logger;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataType;
@@ -16,7 +17,7 @@ public class ActivityLogger extends GoogleFitLogger {
     }
 
     @Override
-    public void handleDatapoint(DataPoint dp) {
+    public void handleDatapoint(SQLiteDatabase db, DataPoint dp) {
         double confidence = 0.;
         String data = "";
         for(Field field : dp.getDataType().getFields()) {
@@ -30,7 +31,7 @@ public class ActivityLogger extends GoogleFitLogger {
         if (confidence > 0.5) {
             long et = dp.getEndTime(TimeUnit.MILLISECONDS);
 
-            insert(et, "\"" + data + "\"");
+            insert_db(et, "\"" + data + "\"",db);
         }
     }
 

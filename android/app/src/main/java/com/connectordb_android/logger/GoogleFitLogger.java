@@ -1,6 +1,7 @@
 package com.connectordb_android.logger;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Handler;
 
@@ -11,10 +12,10 @@ import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessStatusCodes;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataType;
-import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -36,9 +37,10 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
      * handleDatapoint is called during synchronization with the google fit API. It is your job to insert each datapoint into
      * the cache if you want it there. Datapoints are assumed to be ordered
      *
+     * @param db the SQLite database to use for writing datapoints - use db for writing data, since it performs a transaction.
      * @param dp the datapoint that was returned.
      */
-    public abstract void handleDatapoint(DataPoint dp);
+    public abstract void handleDatapoint(SQLiteDatabase db, DataPoint dp);
 
 
     /**
@@ -81,22 +83,44 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
         DataReadRequest readRequest = new DataReadRequest.Builder()
                 .read(dataType)
                 .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+                .setLimit(1000)    // Docs say this is the maximum... anything higher times out
                 .build();
         DataReadResult dataReadResult =
                 Fitness.HistoryApi.readData(googleApiClient, readRequest).await(1, TimeUnit.MINUTES);
-
+        log("Have read result");
         endTime = startTime;
-        for (DataPoint dp : dataReadResult.getDataSet(dataType).getDataPoints()) {
+        SQLiteDatabase db = getDB();
+        if (!dataReadResult.getStatus().isSuccess()) {
+            error(dataReadResult.toString());
+        } else {
+            List<DataPoint> dplist = dataReadResult.getDataSet(dataType).getDataPoints();
+            if (dplist.size()==1000) {
+                // The data size is 1000 - this is not cool at all. It means that we got a full dataset!
+                // there might be data that we didn't get! We therefore run a backtrack until we get less than
+                // 1000 datapoints.
+                log("Up to datapoint limit! There might be missing datapoints! TODO: FIX THIS");
+                // TODO: perform backtrack to get all data stored in google fit
 
-            // Let the specific logger handle the datapoint type
-            handleDatapoint(dp);
-
-            long et= et = dp.getEndTime(TimeUnit.MILLISECONDS);
-            if (et > endTime) {
-                endTime = et;
             }
+
+
+            db.beginTransactionNonExclusive();
+            for (DataPoint dp : dataReadResult.getDataSet(dataType).getDataPoints()) {
+
+                // Let the specific logger handle the datapoint type
+                handleDatapoint(db, dp);
+
+                long et = et = dp.getEndTime(TimeUnit.MILLISECONDS);
+                if (et > endTime) {
+                    endTime = et;
+                }
+            }
+            db.endTransaction();
+
+            kvSet("fit_startTime", Long.toString(endTime));
+
         }
-        kvSet("fit_startTime",Long.toString(endTime));
+        log("End sync");
 
         return true;
     }
