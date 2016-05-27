@@ -1,6 +1,6 @@
-import React, {
-    AppRegistry,
-    Component,
+import React, {Component} from 'react';
+
+import {
     StyleSheet,
     Text,
     View,
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#333333',
         marginBottom: 5
-    },
+    }
 });
 
 const render = () => (
@@ -51,7 +51,6 @@ const render = () => (
                 ConnectorDB
             </Text>
             <Card>
-
                 <Card.Body>
                     <Text>Log In to ConnectorDB</Text>
                     <UsernameChooser/>

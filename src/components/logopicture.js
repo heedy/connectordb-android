@@ -1,14 +1,14 @@
-import React, {PropTypes} from 'react-native';
-import {View, Image,} from 'react-native';
+import React, {PropTypes} from 'react';
+import {View, Image} from 'react-native';
 
 const LogoPicture = ({width, height}) => (
     <View style={{
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
     }}>
         <Image style={{
             width: width,
-            height: height,
+            height: height
         }} source={require('../../branding/square.png')}/>
     </View>
 );

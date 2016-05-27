@@ -1,7 +1,7 @@
 /**
 *	Shows a checkbox which toggles background data-gathering
 **/
-import React, {PropTypes} from 'react-native';
+import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Checkbox} from 'react-native-material-design';
 
@@ -9,7 +9,7 @@ const render = ({checked, callback}) => (<Checkbox value="gather" label="Gather 
 
 render.propTypes = {
     checked: PropTypes.bool.isRequired,
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func.isRequired
 }
 
 export default connect((state) => ({checked: state.gather}), (dispatch) => ({

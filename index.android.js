@@ -1,13 +1,9 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- */
 'use strict';
-
-import React, {AppRegistry, Component,} from 'react-native';
+import React, {Component} from 'react';
+import {AppRegistry} from 'react-native';
 
 import {Provider} from 'react-redux'
-import {createStore, applyMiddleware,} from 'redux'
+import {createStore, applyMiddleware} from 'redux'
 
 // Get the main reducer
 import Reducer from './src/reducers'
@@ -21,19 +17,17 @@ import filter from 'redux-storage-decorator-filter'
 
 // Copy paste from https://github.com/michaelcontento/redux-storage
 const reducer = storage.reducer(Reducer)
-const engine = filter(createEngine("connectordb"), [], ["app", "loaded",]);
+const engine = filter(createEngine("connectordb"), [], ["app", "loaded"]);
 
 // Creates the redux store
 let store = applyMiddleware(storage.createMiddleware(engine))(createStore)(reducer);
 
-storage
-    .createLoader(engine)(store)
-    .then((loadedState) => (console.log(loadedState)));
+storage.createLoader(engine)(store).then((loadedState) => (console.log(loadedState)));
 
 // App is the main component that sets up the app
 import App from './src/app'
 
-class connectordb extends Component {
+class Connectordb extends Component {
     render() {
         return (
             <Provider store={store}>
@@ -43,4 +37,4 @@ class connectordb extends Component {
     }
 }
 
-AppRegistry.registerComponent('connectordb_android', () => connectordb);
+AppRegistry.registerComponent('connectordb_android', () => Connectordb);

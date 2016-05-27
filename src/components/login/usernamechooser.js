@@ -1,7 +1,8 @@
 /**
 *	Shows a textbox for typing in the connectordb username
 **/
-import React, {PropTypes, TextInput} from 'react-native';
+import React, {PropTypes} from 'react';
+import {TextInput} from 'react-native';
 import {connect} from 'react-redux';
 
 const render = ({value, callback}) => (<TextInput placeholder="Username" autoCorrect={false} keyboardType="email-address" value={value} onChangeText={callback}/>);
