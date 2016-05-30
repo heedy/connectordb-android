@@ -24,7 +24,7 @@ import java.util.List;
 public class MainActivity extends ReactActivity {
 
     /**
-     * Sets up all of the things that need to be set up for he app to work correctly.
+     * Sets up all of the things that need to be set up for the app to work correctly.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,7 +90,8 @@ public class MainActivity extends ReactActivity {
     @Override
     protected List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
-            new MainReactPackage()
+            new MainReactPackage(),
+                new AppPackage()
         );
     }
 }

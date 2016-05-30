@@ -22,6 +22,8 @@ import PasswordChooser from '../components/login/passwordchooser';
 import UsernameChooser from '../components/login/usernamechooser';
 import DeviceChooser from '../components/login/devicechooser';
 
+import Logger from '../logger';
+
 const styles = StyleSheet.create({
     container: {
         padding: 10,
@@ -57,7 +59,7 @@ const render = () => (
                     <PasswordChooser/>
                 </Card.Body>
                 <Card.Actions position="left">
-                    <Button text="Login" onPress={() => console.log("I pressed a flat button")}/>
+                    <Button text="Login" onPress={() => Logger.show("he", 2)}/>
                 </Card.Actions>
             </Card>
 
