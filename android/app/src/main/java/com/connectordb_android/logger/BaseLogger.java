@@ -4,12 +4,17 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 /**
  * BaseLogger is the core class used for all logging streams. It handles the common operations,
  * such as writing datapoints to the cache and logging. In order to extend BaseLogger, you need
  * to have a close function, which will stop any gathering you are doing.
  */
 public abstract class BaseLogger {
+
+    // A singleton array allowing iteration through all of the loggers.
+    public static ArrayList<BaseLogger> loggerlist = new ArrayList<BaseLogger>();
 
     protected Context context;
 
@@ -38,6 +43,10 @@ public abstract class BaseLogger {
 
         // Register the stream if it DNE
         DatapointCache.get(c).ensureStream(streamname,streamschema,datatype,icon);
+
+        // Add the stream to our logger list.
+        // Not threadsafe, but whatever
+        loggerlist.add(this);
 
         log("Starting");
     }
@@ -119,6 +128,13 @@ public abstract class BaseLogger {
      *              however they want.
      */
     public abstract void setLogTimer(int value);
+
+
+    /**
+     * gets the json schema to use when generating the settings form for this logger
+     * @return json schema string
+     */
+    public abstract String getSettingSchema();
 
     // Shuts down all logging. You must implement this.
     public abstract void close();

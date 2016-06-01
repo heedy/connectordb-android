@@ -88,6 +88,17 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
         }
     }
+
+    @Override
+    public String getSettingSchema() {
+        // So apparently in java, not only don't you NOT have multiline strings, but the only quote character
+        // is ", meaning that we need hacks to do basic stuff... I am not a big fan of java.
+        return ("{'type': 'object',"+
+                "'properties': {"+
+                "'locationtime': {'type': 'integer','description': 'Time in seconds between location datapoints. 0 is battery saver mode, where location is only gathered when other apps request it.','title': 'Fit Sync'}"+
+                "}}").replace('\'','"');
+    }
+
     @Override
     public void close() {
         log("Closing");

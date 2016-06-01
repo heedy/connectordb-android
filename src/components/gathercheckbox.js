@@ -12,7 +12,7 @@ render.propTypes = {
     callback: PropTypes.func.isRequired
 }
 
-export default connect((state) => ({checked: state.gather}), (dispatch) => ({
+export default connect((state) => ({checked: state.logger.gather}), (dispatch) => ({
     callback: (value) => {
         dispatch({type: "SET_GATHER", value: value});
     }

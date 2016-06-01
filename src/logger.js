@@ -1,3 +1,9 @@
 import {NativeModules} from 'react-native';
 
-export default NativeModules.Logger;
+var Logger = NativeModules.Logger;
+
+export function getSettingSchemas() {
+    return Logger.getSettingSchemas();
+}
+
+export default Logger;

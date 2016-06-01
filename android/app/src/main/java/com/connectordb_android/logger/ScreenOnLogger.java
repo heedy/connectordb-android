@@ -39,6 +39,12 @@ public class ScreenOnLogger extends BaseLogger {
             context.registerReceiver(phoneReceiver, monitorFilter);
         }
     }
+
+    @Override
+    public String getSettingSchema() {
+        return ("{}").replace('\'','"');
+    }
+
     public void close() {
         log("Shutting down");
         context.unregisterReceiver(phoneReceiver);

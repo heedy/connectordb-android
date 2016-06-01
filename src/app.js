@@ -1,9 +1,20 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {ScrollView, Navigator} from 'react-native';
+import Login from './views/LoginPage';
+import Settings from './views/SettingsPage';
 
-import Login from './views/login'
-
-export default class App extends Component {
+class App extends Component {
     render() {
-        return (<Login/>);
+        return (
+            <ScrollView>
+                {this.props.loggedIn
+                    ? (<Settings/>)
+                    : (<Login/>)}
+            </ScrollView>
+        );
+
     }
 }
+
+export default connect((state) => ({loggedIn: state.app.loggedIn}))(App);

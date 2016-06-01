@@ -12,6 +12,6 @@ render.propTypes = {
     callback: PropTypes.func.isRequired
 }
 
-export default connect((state) => ({value: state.app.username_textbox}), (dispatch) => ({
-    callback: (value) => (dispatch({type: "APP_SET_USERNAME", value: value}))
+export default connect((state) => ({value: state.login.username}), (dispatch) => ({
+    callback: (value) => (dispatch({type: "login/SET_USERNAME", value: value}))
 }))(render);

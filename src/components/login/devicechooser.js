@@ -12,6 +12,6 @@ render.propTypes = {
     callback: PropTypes.func.isRequired
 }
 
-export default connect((state) => ({value: state.app.device_textbox}), (dispatch) => ({
-    callback: (value) => (dispatch({type: "APP_SET_DEVICE", value: value}))
+export default connect((state) => ({value: state.login.device}), (dispatch) => ({
+    callback: (value) => (dispatch({type: "login/SET_DEVICE", value: value}))
 }))(render);

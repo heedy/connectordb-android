@@ -252,6 +252,16 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
         gatherEnabled();
     }
 
+    @Override
+    public String getSettingSchema() {
+        // So apparently in java, not only don't you NOT have multiline strings, but the only quote character
+        // is ", meaning that we need hacks to do basic stuff... I am not a big fan of java.
+        return ("{'type': 'object',"+
+        "'properties': {"+
+                "'timeBetweenSyncs': {'type': 'integer'}"+
+        "},'required': ['timeBetweenSyncs']}").replace('\'','"');
+    }
+
     /**
      * Note: We are making the critical assumption that the lifetime of the FitLogger is the same as
      * the lifetime of the full application, since we are not removing this instance from loggers
