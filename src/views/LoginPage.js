@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
         marginBottom: 5
     }
 });
-
+/*
 const render = (props) => (
     <View style={styles.container}>
         <LogoPicture width={100} height={100}/>
@@ -77,6 +77,33 @@ const render = (props) => (
             </Card.Body>
         </Card>
 
+    </View>
+);
+*/
+const render = (props) => (
+    <View style={styles.container}>
+        <LogoPicture width={100} height={100}/>
+        <Text style={styles.welcome}>
+            ConnectorDB
+        </Text>
+        <Card>
+            <Card.Body>
+                <Text>Log In to ConnectorDB</Text>
+                <UsernameChooser/>
+                <PasswordChooser/>
+            </Card.Body>
+            <Card.Actions>
+                <Button text="Login" onPress={() => props.login(props.loginState)}/>
+            </Card.Actions>
+        </Card>
+        <Card>
+            <Card.Body>
+                <Text>Server:</Text>
+                <ServerChooser/>
+                <Text>Device Name:</Text>
+                <DeviceChooser/>
+            </Card.Body>
+        </Card>
     </View>
 );
 
