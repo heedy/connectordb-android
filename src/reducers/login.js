@@ -5,7 +5,9 @@ export const LoginInitialState = {
     server: "https://connectordb.com",
 
     loggerDeviceInitializer: {
-        description: "Android data logging app"
+        description: "Android data logging app",
+        visible: true,
+        enabled: true
     }
 };
 

@@ -4,6 +4,7 @@ import {View, Text} from 'react-native';
 import t from 'tcomb-form-native';
 import transform from 'tcomb-json-schema';
 import {Card, Button} from 'react-native-material-design';
+import GatherCheckbox from '../components/gathercheckbox';
 
 class SettingsPage extends Component {
 
@@ -13,15 +14,14 @@ class SettingsPage extends Component {
             <View>
                 <Card>
                     <Card.Body>
-                        <Text>Set up settings</Text>
+                        <Text>Android Logger Settings</Text>
+                        <GatherCheckbox/>
                     </Card.Body>
                 </Card>
                 {Object.keys(l).map((key) => {
                     return (
                         <Card key={key}>
-                            <Card.Body>
-                                <Text>{key}</Text>
-                            </Card.Body>
+                            <Card.Body></Card.Body>
                         </Card>
                     );
                 })}
