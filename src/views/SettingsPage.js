@@ -6,6 +6,8 @@ import transform from 'tcomb-json-schema';
 import {Card, Button, Checkbox} from 'react-native-material-design';
 import GatherCheckbox from '../components/gathercheckbox';
 import AutoSync from '../components/autosync';
+import {sync, setEnabled} from '../actions/logger';
+import {logout} from '../actions/login';
 
 class SettingsPage extends Component {
 
@@ -16,9 +18,12 @@ class SettingsPage extends Component {
                 <Card>
                     <Card.Body>
                         <Text>Android Logger Settings</Text>
-                        <GatherCheckbox/>
                         <AutoSync/>
                     </Card.Body>
+                    <Card.Actions>
+                        <Button text="Sync Now" onPress={() => this.props.sync()}/>
+                        <Button text="Log Out" onPress={() => this.props.logout()}/>
+                    </Card.Actions>
                 </Card>
                 {Object.keys(l).map((key) => {
                     return (
@@ -28,7 +33,7 @@ class SettingsPage extends Component {
                                         ? l[key].nickname
                                         : key}</Text>
                                 <Text>{l[key].description}</Text>
-                                <Checkbox value={key} label="Enabled" checked={true}/></Card.Body>
+                                <Checkbox value={key} label="Enabled" checked={this.props.enabled[key]} onCheck={(value) => this.props.setEnabled(key, value)}/></Card.Body>
                         </Card>
                     );
                 })}
@@ -36,4 +41,8 @@ class SettingsPage extends Component {
         );
     }
 }
-export default connect((state) => ({loggers: state.logger.loggers}))(SettingsPage);
+export default connect((state) => ({loggers: state.logger.loggers, enabled: state.logger.enabled}), (dispatch) => ({
+    sync: () => dispatch(sync()),
+    logout: () => dispatch(logout()),
+    setEnabled: (key, value) => dispatch(setEnabled(key, value))
+}))(SettingsPage);

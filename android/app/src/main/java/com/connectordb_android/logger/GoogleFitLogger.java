@@ -162,7 +162,7 @@ public abstract class GoogleFitLogger extends BaseLogger implements DatapointCac
                     == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
                 log("Existing subscription detected.");
             } else {
-                log("Successfully subscribed!");
+                log("Successfully set fitness API!");
             }
         } else {
             if (status.getStatusMessage()!=null) {

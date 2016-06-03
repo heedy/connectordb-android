@@ -134,9 +134,10 @@ public class DatapointCache extends SQLiteOpenHelper {
         db.replace("kv",null,contentValues);
     }
 
-    public void setCred(String device, String apikey) {
+    public void setCred(String server,String device, String apikey) {
         this.setKey("devicename",device,null);
         this.setKey("__apikey",apikey,null);
+        this.setKey("server",server,null);
     }
 
 
@@ -249,10 +250,14 @@ public class DatapointCache extends SQLiteOpenHelper {
 
     }
 
+    /**
+     *
+     * @param time time in seconds between sync attempts
+     */
     public synchronized void enableTimedSync(long time) {
         disableTimedSync();
         this.setKey("syncenabled", "1",null);
-        this.setKey("syncperiod",Long.toString(time),null);
+        this.setKey("syncperiod",Long.toString(time*1000),null);
         startSyncWait();
     }
 

@@ -1,8 +1,9 @@
 export const LoggerInitialState = {
     gather: true,
-    autosync: true,
+    autosync: 20 *60,
     loggers: {},
-    device: null
+    device: null,
+    enabled: {}
 };
 
 export default function loggerReducer(state = LoggerInitialState, action) {
@@ -13,9 +14,16 @@ export default function loggerReducer(state = LoggerInitialState, action) {
                 gather: action.value
             };
         case 'SET_LOGGERS':
+            newenabled = Object.assign({}, state.enabled);
+            Object.keys(action.value).map((key) => {
+                if (newenabled[key] === undefined) {
+                    newenabled[key] = true;
+                }
+            });
             return {
                 ...state,
-                loggers: action.value
+                loggers: action.value,
+                enabled: newenabled
             };
         case 'SET_LOGGER_DEVICE':
             return {
@@ -27,6 +35,13 @@ export default function loggerReducer(state = LoggerInitialState, action) {
                 ...state,
                 autosync: action.value
             };
+        case 'SET_ENABLED':
+            newval = Object.assign({}, state.enabled);
+            newval[action.key] = action.value;
+            return {
+                ...state,
+                enabled: newval
+            }
     }
     return state;
 }

@@ -1,5 +1,5 @@
 'use strict';
-console.log("WORKING5");
+
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
 import React, {Component} from 'react';

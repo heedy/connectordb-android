@@ -12,15 +12,12 @@ import {Checkbox} from 'react-native-material-design';
 
 import {setSync} from '../actions/logger';
 
-const render = ({checked, callback}) => (<Checkbox value="autosync" label="Automatically sync to ConnectorDB" checked={checked} onCheck={callback}/>);
-
-render.propTypes = {
-    checked: PropTypes.bool.isRequired,
-    callback: PropTypes.func.isRequired
-}
+const render = ({checked, callback}) => (<Checkbox value="autosync" label="Automatically sync to ConnectorDB" checked={checked >= 0} onCheck={callback}/>);
 
 export default connect((state) => ({checked: state.logger.autosync}), (dispatch) => ({
     callback: (value) => {
-        dispatch(setSync(value));
+        dispatch(setSync(value
+            ? 60 * 20 // Every 20 minutes
+            : -1));
     }
 }))(render);

@@ -1,5 +1,8 @@
 import {ConnectorDB} from 'connectordb';
 import {Alert} from 'react-native';
+
+import Logger, {setSync} from './logger';
+
 function failAlert(msg, dispatch) {
     dispatch({type: "login/SET_PASSWORD", value: ""});
     Alert.alert('Failed to log in', msg.msg);
@@ -73,9 +76,26 @@ export default function login(loginState) {
                 failAlert(result, dispatch);
                 return null;
             }
+
+            // Set up the logger
+            Logger.setCred(loginState.server, loginState.username + "/" + loginState.device, result.apikey);
+            dispatch(setSync(60 * 20)); //Set sync to 20 minutes
+
             dispatch({type: "SET_LOGGER_DEVICE", value: result});
             dispatch({type: "login/RESET"});
             dispatch({type: "SET_LOGGED_IN", value: true});
+
         })
+    }
+}
+
+export function logout() {
+    return (dispatch) => {
+        dispatch(setSync(-1));
+        Logger.setCred("", "", "");
+        dispatch({type: "SET_LOGGED_IN", value: false});
+        dispatch({type: "SET_LOGGER_DEVICE", value: null});
+        dispatch({type: "SET_USER", value: null});
+        dispatch({type: "SET_DEVICE", value: null});
     }
 }
