@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 public class ScreenOnLogger extends BaseLogger {
+    private boolean enabled = false;
 
     BroadcastReceiver phoneReceiver = new BroadcastReceiver() {
         @Override
@@ -27,16 +28,23 @@ public class ScreenOnLogger extends BaseLogger {
     }
 
     @Override
-    public void enabled(boolean value) {
+    protected void enabled(boolean value) {
         if (!value) {
-            log("Disabling");
-            context.unregisterReceiver(phoneReceiver);
+            if (enabled) {
+                log("Disabling");
+                context.unregisterReceiver(phoneReceiver);
+                enabled = false;
+            }else {
+                log("Disabled.");
+            }
+
         } else {
             log("Enabling");
             IntentFilter monitorFilter = new IntentFilter();
             monitorFilter.addAction(Intent.ACTION_SCREEN_ON);
             monitorFilter.addAction(Intent.ACTION_SCREEN_OFF);
             context.registerReceiver(phoneReceiver, monitorFilter);
+            enabled = true;
         }
     }
 

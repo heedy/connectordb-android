@@ -45,8 +45,18 @@ public abstract class BaseLogger {
 
         // Register the stream if it DNE
         DatapointCache.get(c).ensureStream(name,schema,nickname,description,datatype,icon);
+    }
 
-        log("Starting");
+    /**
+     * init is called after the constructor, which finishes setup
+     */
+    public void init() {
+        // Get the logger's status - and set it to enabled (true) if such a status does not exist
+        if (kvGet("enabled").equals("false")) {
+            enabled(false);
+        } else {
+            enabled(true);
+        }
     }
 
     /**
@@ -116,11 +126,22 @@ public abstract class BaseLogger {
     }
 
     /**
+     * setEnabled is to be used to set the enabled state of the logger such that the state is
+     * saved to the kv store
+     * @param value
+     */
+    public void setEnabled(boolean value) {
+        kvSet("enabled",value?"true":"false");
+        // call enabled
+        enabled(value);
+    }
+
+    /**
      * enabled allows to turn on/off specific loggers
      *
      * @param value Whether this logger is enabled
      */
-    public abstract void enabled(boolean value);
+    protected abstract void enabled(boolean value);
 
 
     // Shuts down all logging. You must implement this.

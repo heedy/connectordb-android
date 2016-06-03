@@ -94,7 +94,7 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
     }
 
     @Override
-    public void enabled(boolean value) {
+    protected void enabled(boolean value) {
         setLogTimer(value?0:-1);
     }
 

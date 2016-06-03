@@ -41,7 +41,6 @@ public class LoggerModule extends ReactContextBaseJavaModule {
         Iterator<BaseLogger> iter = LoggingManager.get().loggers.iterator();
         while (iter.hasNext()) {
             BaseLogger l = iter.next();
-            Log.d("Add Logger",l.name);
 
             WritableMap stream = Arguments.createMap();
             stream.putString("nickname",l.nickname);
@@ -67,7 +66,7 @@ public class LoggerModule extends ReactContextBaseJavaModule {
             BaseLogger l = iter.next();
             if (l.name.equals(key)) {
                 Log.d(TAG, "setEnabled: "+key);
-                l.enabled(value);
+                l.setEnabled(value);
                 break;
             }
         }

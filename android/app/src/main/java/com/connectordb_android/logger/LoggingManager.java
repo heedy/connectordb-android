@@ -25,8 +25,8 @@ public class LoggingManager {
 
 
     public void add(BaseLogger b) {
+        b.init();
         loggers.add(b);
-        b.enabled(true);
     }
 
 

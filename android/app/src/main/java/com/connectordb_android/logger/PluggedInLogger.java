@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 
 public class PluggedInLogger extends BaseLogger {
+    private boolean enabled = false;
 
     BroadcastReceiver phoneReceiver = new BroadcastReceiver() {
         Boolean hadBatteryMessage = false;
@@ -46,15 +47,22 @@ public class PluggedInLogger extends BaseLogger {
     }
 
     @Override
-    public void enabled(boolean value) {
+    protected void enabled(boolean value) {
         if (!value) {
-            log("Disabling");
-            context.unregisterReceiver(phoneReceiver);
+            if (enabled) {
+                log("Disabling");
+                context.unregisterReceiver(phoneReceiver);
+                enabled = false;
+            } else {
+                log("Disabled.");
+            }
+
         } else {
             log("Enabling");
             IntentFilter monitorFilter = new IntentFilter();
             monitorFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
             context.registerReceiver(phoneReceiver, monitorFilter);
+            enabled = true;
         }
     }
 

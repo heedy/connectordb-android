@@ -191,7 +191,7 @@ public abstract class GoogleFitLogger extends BaseLogger implements DatapointCac
     }
 
     @Override
-    public void enabled(boolean value) {
+    protected void enabled(boolean value) {
         logenabled = value;
         // If not -1, enable gather
         gatherEnabled();
