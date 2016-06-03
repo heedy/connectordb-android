@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 public class HeartLogger extends GoogleFitLogger {
 
     HeartLogger(Context c) {
-        super("HeartLogger","heartrate","{\"type\":\"number\"}",
-                "number.heartrate.person","",c,DataType.TYPE_HEART_RATE_BPM);
+        super("heartrate","{\"type\":\"number\"}",
+                "Heart Rate","Heart rate logged by google-fit-connected devices","heartrate.bpm","",c,DataType.TYPE_HEART_RATE_BPM);
     }
 
     @Override

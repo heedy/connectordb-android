@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class ActivityLogger extends GoogleFitLogger {
 
     ActivityLogger(Context c) {
-        super("ActivityLogger","activity","{\"type\":\"string\"}",
+        super("activity","{\"type\":\"string\"}","Activity Type","The current activity that phone is detecting",
                 "string.person.activity","",c,DataType.TYPE_ACTIVITY_SAMPLE);
     }
 

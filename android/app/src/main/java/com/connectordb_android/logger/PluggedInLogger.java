@@ -41,13 +41,13 @@ public class PluggedInLogger extends BaseLogger {
 
 
     public PluggedInLogger(Context c) {
-        super("PluggedInLogger","plugged_in",
-                "boolean","","{\"type\":\"boolean\"}",c);
+        super("pluggedin","{\"type\":\"boolean\"}","Plugged In", "True when the device is currently plugged in",
+                "boolean","",c);
     }
 
     @Override
-    public void setLogTimer(int value) {
-        if (value == -1) {
+    public void enabled(boolean value) {
+        if (!value) {
             log("Disabling");
             context.unregisterReceiver(phoneReceiver);
         } else {
@@ -56,11 +56,6 @@ public class PluggedInLogger extends BaseLogger {
             monitorFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
             context.registerReceiver(phoneReceiver, monitorFilter);
         }
-    }
-
-    @Override
-    public String getSettingSchema() {
-        return ("{}").replace('\'','"');
     }
 
 

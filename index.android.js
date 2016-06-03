@@ -12,6 +12,8 @@ import thunk from 'redux-thunk'
 
 import {reducers} from './src/reducers/index';
 
+import {getLoggers} from './src/actions/logger';
+
 // App is the main component that sets up the app
 import App from './src/app';
 
@@ -26,7 +28,10 @@ const storageMiddleware = storage.createMiddleware(engine);
 
 let store = applyMiddleware(thunk, storageMiddleware)(createStore)(reducer);
 
-storage.createLoader(engine)(store).then((loadedState) => (console.log(loadedState)));
+storage.createLoader(engine)(store).then((loadedState) => {
+    console.log(loadedState);
+    store.dispatch(getLoggers());
+});
 
 class Connectordb extends Component {
     render() {

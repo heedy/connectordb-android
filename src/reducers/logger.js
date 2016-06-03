@@ -1,5 +1,6 @@
 export const LoggerInitialState = {
     gather: true,
+    autosync: true,
     loggers: {},
     device: null
 };
@@ -20,6 +21,11 @@ export default function loggerReducer(state = LoggerInitialState, action) {
             return {
                 ...state,
                 device: action.value
+            };
+        case 'SET_AUTOSYNC':
+            return {
+                ...state,
+                autosync: action.value
             };
     }
     return state;

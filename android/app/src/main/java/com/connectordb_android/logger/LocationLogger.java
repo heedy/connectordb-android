@@ -13,7 +13,7 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
     private GoogleApiClient googleApiClient;
 
     public LocationLogger(Context c) {
-        super("LocationLogger", "location",
+        super("location",
                 "{\"type\":\"object\",\"properties\":" +
                         "{\"latitude\":{\"type\":\"number\"}," +
                         "\"longitude\": {\"type\": \"number\"}," +
@@ -22,6 +22,7 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
                         "\"speed\": {\"type\": \"number\"}," +
                         "\"bearing\": {\"type\": \"number\"}" +
                         "},\"required\": [\"latitude\",\"longitude\"]}",
+                "","GPS coordinates",
                 "location.gps","",c);
 
         // Logging GPS requires connecting the google play services
@@ -67,8 +68,9 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
 
     }
 
-    // see BaseLogger setLogTimer
-    @Override
+    // setLogTimer sets the time in milliseconds between requested locatino updates. -1 stops updates,
+    // 0 sets updating in the background, and a positive value sets the update interval to the given number
+    // of milliseconds
     public void setLogTimer(int value) {
         if (value==0) {
             log("Setting Battery Saver mode");
@@ -85,18 +87,15 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
 
         if (googleApiClient!=null && googleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient,this);
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+            if (value>=0) {
+                LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+            }
         }
     }
 
     @Override
-    public String getSettingSchema() {
-        // So apparently in java, not only don't you NOT have multiline strings, but the only quote character
-        // is ", meaning that we need hacks to do basic stuff... I am not a big fan of java.
-        return ("{'type': 'object',"+
-                "'properties': {"+
-                "'locationtime': {'type': 'integer','description': 'Time in seconds between location datapoints. 0 is battery saver mode, where location is only gathered when other apps request it.','title': 'Fit Sync'}"+
-                "}}").replace('\'','"');
+    public void enabled(boolean value) {
+        setLogTimer(value?0:-1);
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.connectordb_android.logger.BaseLogger;
+import com.connectordb_android.logger.LoggingManager;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
@@ -26,19 +27,25 @@ public class LoggerModule extends ReactContextBaseJavaModule {
     }
 
     /**
-     * getSettingSchemas returns a map of the json schemas used for setting up individual logger
-     * properties. The json schemas are all strings that can be parsed.
-     * NOTE: The reason they are strings is because I don't want to deal with java maps for this.
-     * @param promise a promise which returns a map os string json schemas.
+     * getLoggers returns the logger stream information
+     * @param promise a promise which returns a map of the logger streams
      */
     @ReactMethod
-    public void getSettingSchemas(Promise promise) {
+    public void getLoggers(Promise promise) {
         WritableMap settings = Arguments.createMap();
-        Iterator<BaseLogger> iter = BaseLogger.loggerlist.iterator();
+        Iterator<BaseLogger> iter = LoggingManager.get().loggers.iterator();
         while (iter.hasNext()) {
             BaseLogger l = iter.next();
-            Log.d("Add Schema",l.name+":"+l.getSettingSchema());
-            settings.putString(l.name,l.getSettingSchema());
+            Log.d("Add Logger",l.name);
+
+            WritableMap stream = Arguments.createMap();
+            stream.putString("nickname",l.nickname);
+            stream.putString("description",l.description);
+            stream.putString("schema",l.schema);
+            stream.putString("icon",l.icon);
+            stream.putString("datatype",l.datatype);
+
+            settings.putMap(l.name,stream);
         }
         promise.resolve(settings);
     }

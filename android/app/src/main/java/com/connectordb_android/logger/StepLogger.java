@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 public class StepLogger extends GoogleFitLogger {
     StepLogger(Context c) {
-        super("StepLogger","steps","{\"type\":\"number\"}",
+        super("steps","{\"type\":\"number\"}","Step Count","Number of steps taken",
                 "number.stepcount","",c,DataType.TYPE_STEP_COUNT_DELTA);
     }
 

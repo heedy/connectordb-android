@@ -12,41 +12,39 @@ import java.util.ArrayList;
  * to have a close function, which will stop any gathering you are doing.
  */
 public abstract class BaseLogger {
-
-    // A singleton array allowing iteration through all of the loggers.
-    public static ArrayList<BaseLogger> loggerlist = new ArrayList<BaseLogger>();
-
     protected Context context;
 
-    // These are only public for reading. Don't write them. I trust you, because I'm too lazy
+    // These are only public for reading. Don't write them after initialization. I trust you, because I'm too lazy
     // to write getX()
     public String name;
-    public String streamname;
-    public String streamschema;
+    public String nickname;
+    public String description;
+    public String datatype;
+    public String schema;
+    public String icon;
 
     /**
      * Sets up the BaseLogger - once this is set up, it is all you need to manage logging to ConnectorDB.
      * to see examples, look at one of the built-in loggers.
      *
      * @param name is a name to use when logging to the debug log
-     * @param streamname is the name to use for the stream
-     * @param streamschema is a stringified version of the JSONSchema to use for the stream
-     * @param datatype the ConnectorDB datatype for the stream
-     * @param icon the URLencoded icon to set up for the stream
+     * @param schema is a stringified version of the JSONSchema to use for the stream
+     * @param nickname - the nickname to give the stream
+     * @param description - a string describing what the stream does
+     * @param datatype - optional conectordb datatype
+     * @param icon is the ison to use. Optional.
      * @param c is the context. Because we need to pass around the context to do anything.
      */
-    BaseLogger(String name, String streamname,String streamschema,String datatype, String icon, Context c) {
+    BaseLogger(String name, String schema, String nickname, String description, String datatype, String icon, Context c) {
         this.context = c;
         this.name = name;
-        this.streamname = streamname;
-        this.streamschema = streamschema;
+        this.schema = schema;
+        this.nickname = nickname;
+        this.description = description;
+        this.datatype = datatype;
 
         // Register the stream if it DNE
-        DatapointCache.get(c).ensureStream(streamname,streamschema,datatype,icon);
-
-        // Add the stream to our logger list.
-        // Not threadsafe, but whatever
-        loggerlist.add(this);
+        DatapointCache.get(c).ensureStream(name,schema,nickname,description,datatype,icon);
 
         log("Starting");
     }
@@ -76,7 +74,7 @@ public abstract class BaseLogger {
      *
      */
     protected void insert_db(long timestamp, String datapoint, SQLiteDatabase db) {
-        DatapointCache.get(context).insert(streamname,timestamp,datapoint,db);
+        DatapointCache.get(context).insert(name,timestamp,datapoint,db);
     }
 
     /**
@@ -105,7 +103,7 @@ public abstract class BaseLogger {
      * @return the key's value, and "" if it doesn't exist
      */
     protected String kvGet(String key) {
-        return DatapointCache.get(context).getKey(streamname + "_"+key);
+        return DatapointCache.get(context).getKey(name + "_"+key);
     }
 
     /**
@@ -114,27 +112,16 @@ public abstract class BaseLogger {
      * @param value
      */
     protected void kvSet(String key,String value) {
-        DatapointCache.get(context).setKey(streamname + "_"+key,value,null);
+        DatapointCache.get(context).setKey(name + "_"+key,value,null);
     }
 
     /**
-     * setLogTimer sets up the time period between data updates. The value is in milliseconds.
-     * There are two special values, which can be implemented in any way you want. If the logger
-     * you're implementing does not have specific time period for logging, handle only -1 and 0
-     * which represent off and on respectively. This is automatically called when the logger is started up.
+     * enabled allows to turn on/off specific loggers
      *
-     * @param value The time in milliseconds between data updates. -1 means turn off logging
-     *              and 0 means "background" - which the individual loggers are free to implement
-     *              however they want.
+     * @param value Whether this logger is enabled
      */
-    public abstract void setLogTimer(int value);
+    public abstract void enabled(boolean value);
 
-
-    /**
-     * gets the json schema to use when generating the settings form for this logger
-     * @return json schema string
-     */
-    public abstract String getSettingSchema();
 
     // Shuts down all logging. You must implement this.
     public abstract void close();

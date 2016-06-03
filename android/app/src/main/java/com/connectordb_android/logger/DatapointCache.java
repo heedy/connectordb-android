@@ -10,6 +10,9 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  * DatapointCache holds an SQLite database which manages all of the information needed to
  * perform data gathering and syncing to ConnectorDB in the background.
@@ -21,7 +24,7 @@ import android.util.Log;
  * The DatapointCache also manages synchronization with ConnectorDB
  */
 public class DatapointCache extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String TAG = "DatapointCache";
     public static final String DATABASE_NAME = "DatapointCache.db";
 
@@ -63,7 +66,7 @@ public class DatapointCache extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.v(TAG, "Creating new logger cache database");
-        db.execSQL("CREATE TABLE streams (streamname TEXT PRIMARY KEY, schema TEXT, datatype TEXT, icon TEXT);");
+        db.execSQL("CREATE TABLE streams (streamname TEXT PRIMARY KEY, schema TEXT, nickname TEXT, description TEXT, datatype TEXT, icon TEXT);");
         db.execSQL("CREATE TABLE cache (streamname TEXT, timestamp REAL, data TEXT);");
         db.execSQL("CREATE TABLE kv (key TEXT PRIMARY KEY, value TEXT);");
 
@@ -71,7 +74,14 @@ public class DatapointCache extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO kv VALUES ('server','https://connectordb.com');");
         db.execSQL("INSERT INTO kv VALUES ('devicename','');");
         db.execSQL("INSERT INTO kv VALUES ('__apikey','');");
-        db.execSQL("INSERT INTO kv VALUES ('syncperiod','3600');"); // Make the database sync every hour
+
+        // The default synchronization period is 20 minutes. Ideally this would be configurable by the user,
+        // Unfortunately, at the moment, The Google Fit logger only obtains up to 1000 datapoints per sync,
+        // which means that if you don't sync frequently enough, you could use data. This is a TODO, so
+        // once that is fixed, the sync time can be changed to the user's liking.
+        // Even then, data in google fit isn't kept forever - google keeps it for a couple months, so
+        // stopping sync completely, and then reenabling several months later might not save all data.
+        db.execSQL("INSERT INTO kv VALUES ('syncperiod','1200');");
         db.execSQL("INSERT INTO kv VALUES ('syncenabled','0');"); // Sync is disabled by default
     }
 
@@ -136,16 +146,20 @@ public class DatapointCache extends SQLiteOpenHelper {
      *
      * @param stream the stream name
      * @param schema the jsonSchema
+     * @param nickname the stream's nickname
+     * @param description the stream's description
      * @param datatype connectorDB datatype for the stream
      * @param icon urlencoded icon to use for the stream
      */
-    public void ensureStream(String stream,String schema, String datatype, String icon) {
+    public void ensureStream(String stream, String schema,String nickname, String description, String datatype, String icon) {
         Log.v(TAG, "Ensuring stream " + stream);
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("streamname", stream);
         contentValues.put("schema", schema);
+        contentValues.put("description",description);
+        contentValues.put("nickname",nickname);
         contentValues.put("datatype", datatype);
         contentValues.put("icon", icon);
         db.insertWithOnConflict("streams", null, contentValues, SQLiteDatabase.CONFLICT_IGNORE);
@@ -235,7 +249,7 @@ public class DatapointCache extends SQLiteOpenHelper {
 
     }
 
-    public void enableTimedSync(long time) {
+    public synchronized void enableTimedSync(long time) {
         disableTimedSync();
         this.setKey("syncenabled", "1",null);
         this.setKey("syncperiod",Long.toString(time),null);
@@ -252,9 +266,34 @@ public class DatapointCache extends SQLiteOpenHelper {
         }.execute();
     }
 
+
+    /*
+    Certain loggers might want to perform a task before sync. See the google fit loggers for an example.
+    In these, the actual logging is done by android, and the logger needs to get the data before sync.
+     */
+    public interface PreSyncer {
+        public void preSync();
+    }
+    private static ArrayList<PreSyncer> presync = new ArrayList<PreSyncer>();
+
+    public synchronized void addPreSync(PreSyncer p) {
+        Log.v(TAG,"Added Presyncer");
+        presync.add(p);
+    }
+
+
+
     //Synchronizes the database with the server
     public synchronized boolean sync() {
-        Log.v(TAG,"Starting sync");
+        Log.i(TAG,"Starting sync");
+
+        Log.v(TAG,"Running Presync tasks");
+        Iterator<PreSyncer> iter = presync.iterator();
+        while (iter.hasNext()) {
+            iter.next().preSync();
+        }
+
+
         String server = this.getKey("server");
         String devicename = this.getKey("devicename");
         String apikey = this.getKey("__apikey");

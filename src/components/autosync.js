@@ -10,17 +10,17 @@ import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Checkbox} from 'react-native-material-design';
 
-import {setGather} from '../actions/logger';
+import {setSync} from '../actions/logger';
 
-const render = ({checked, callback}) => (<Checkbox value="gather" label="Gather data in the background" checked={checked} onCheck={callback}/>);
+const render = ({checked, callback}) => (<Checkbox value="autosync" label="Automatically sync to ConnectorDB" checked={checked} onCheck={callback}/>);
 
 render.propTypes = {
     checked: PropTypes.bool.isRequired,
     callback: PropTypes.func.isRequired
 }
 
-export default connect((state) => ({checked: state.logger.gather}), (dispatch) => ({
+export default connect((state) => ({checked: state.logger.autosync}), (dispatch) => ({
     callback: (value) => {
-        dispatch(setGather(value));
+        dispatch(setSync(value));
     }
 }))(render);

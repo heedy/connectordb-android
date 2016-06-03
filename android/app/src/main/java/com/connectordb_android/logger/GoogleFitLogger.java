@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * All we need to do is read the gathered data once in a while, and put it into our cache, so that it will be synced
  * to ConnectorDB.
  */
-public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSingleton.ApiCallback, ResultCallback<Status> {
+public abstract class GoogleFitLogger extends BaseLogger implements DatapointCache.PreSyncer, GoogleApiSingleton.ApiCallback, ResultCallback<Status> {
 
     /**
      * handleDatapoint is called during synchronization with the google fit API. It is your job to insert each datapoint into
@@ -43,28 +43,20 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
     public abstract void handleDatapoint(SQLiteDatabase db, DataPoint dp);
 
 
-    /**
-     * The GoogleFitLogger uses one background process to handle ALL google fit subscriptions,
-     * so it synchronizes all at the same time, rather than wasting battery synchronizing one
-     * at a time at different times.
-     */
-
     protected GoogleApiClient googleApiClient;
     protected DataType dataType;
-    protected int logtime = 0;
+    protected boolean logenabled = false;
 
-    // This is used to trigger sync every time period
-    private Handler handler = new Handler();
-    private boolean syncIsRunning = false;
 
     /**
-     * sync takes the data that the fit API gathered for us, and moves it into our data cache,
-     * so that it will be inserted into ConnectorDB next time the cache is synced. This step happens in the background.
+     * presync takes the data that the fit API gathered for us, and moves it into our data cache,
+     * so that it will be inserted into ConnectorDB on sync. This conforms to the CatapointCache.PreSyncer
+     * interface, and is run right before connectordb is synced each time.
      */
-    private synchronized boolean sync() {
+    public synchronized void preSync() {
         if (googleApiClient==null || !googleApiClient.isConnected()) {
             warn("Google API is not connected - can't sync fit");
-            return false;
+            return;
         }
 
         log("Syncing Fit");
@@ -98,6 +90,7 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
                 // The data size is 1000 - this is not cool at all. It means that we got a full dataset!
                 // there might be data that we didn't get! We therefore run a backtrack until we get less than
                 // 1000 datapoints.
+                // https://developers.google.com/fit/android/history#insert_data
                 log("Up to datapoint limit! There might be missing datapoints! TODO: FIX THIS");
                 // TODO: perform backtrack to get all data stored in google fit
 
@@ -122,47 +115,6 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
         }
         log("End sync");
 
-        return true;
-    }
-
-    /**
-     * Syncer is a Runnable that runs sync in the background, and sets up a repeated sync
-     */
-    private class Syncer implements Runnable {
-        @Override
-        public void run() {
-            new AsyncTask<Void,Void,Void>() {
-                @Override
-                protected Void doInBackground(Void ...params) {
-                    GoogleFitLogger.this.sync();
-                    GoogleFitLogger.this.runSyncer();
-                    return null;
-                }
-            }.execute();
-        }
-    }
-
-    /**
-     * runSyncer sets up the syncer to auto run
-     */
-    private synchronized void runSyncer() {
-        if (logtime == 0) {
-            // Once an hour if nothing given
-            logtime = 1000*60*60;
-        }
-        if (logtime > 0) {
-            syncIsRunning = true;
-            log("Setting up new sync in "+ Integer.toString(logtime)+"ms");
-            handler.postDelayed(new Syncer(),logtime);
-        } else {
-            syncIsRunning = false;
-        }
-    }
-
-    private void ensureSyncer() {
-        if (!syncIsRunning) {
-            runSyncer();
-        }
     }
 
 
@@ -174,13 +126,15 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
      * @param dataType the fitness DataType to gather. Make sure that the correct scope for the datatypes
      *                 is enabled in GoogleApiSingleton, otherwise there will be a permissions error
      */
-    GoogleFitLogger(String logName, String streamName, String jsonSchema,String datatype,String icon, Context c,DataType dataType) {
-        super(logName,streamName,jsonSchema,datatype,icon,c);
+    GoogleFitLogger(String streamName, String jsonSchema, String nickname, String description, String datatype, String icon,Context c,DataType dataType) {
+        super(streamName,jsonSchema,nickname,description,datatype,icon,c);
         this.dataType = dataType;
-
 
         log("Connecting to Google Play services");
         GoogleApiSingleton.get().getGoogleApi(c, this);
+
+        // Add the presync
+        DatapointCache.get(c).addPreSync(this);
 
     }
 
@@ -223,12 +177,10 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
     private void gatherEnabled() {
 
         if (googleApiClient!=null && googleApiClient.isConnected()) {
-            if (logtime!=-1) {
+            if (logenabled) {
                 log("Enabling");
                 Fitness.RecordingApi.subscribe(googleApiClient, dataType)
                         .setResultCallback(this);
-                ensureSyncer();
-
 
             } else {
                 log("Disabling");
@@ -238,29 +190,13 @@ public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSin
         }
     }
 
-    /**
-     * In the fitlogger, you can only turn logging on and off, since google's fitness API actually
-     * gathers the data for us - all we control is when we sync to our cache.
-     *
-     * @param value The time in milliseconds between data updates. -1 means turn off logging
-     *              and 0 means "background" - which the individual loggers are free to implement
-     */
     @Override
-    public void setLogTimer(int value) {
-        logtime=value;
+    public void enabled(boolean value) {
+        logenabled = value;
         // If not -1, enable gather
         gatherEnabled();
     }
 
-    @Override
-    public String getSettingSchema() {
-        // So apparently in java, not only don't you NOT have multiline strings, but the only quote character
-        // is ", meaning that we need hacks to do basic stuff... I am not a big fan of java.
-        return ("{'type': 'object',"+
-        "'properties': {"+
-                "'timeBetweenSyncs': {'type': 'integer'}"+
-        "},'required': ['timeBetweenSyncs']}").replace('\'','"');
-    }
 
     /**
      * Note: We are making the critical assumption that the lifetime of the FitLogger is the same as

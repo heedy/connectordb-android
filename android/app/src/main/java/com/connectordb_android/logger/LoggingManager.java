@@ -21,14 +21,12 @@ public class LoggingManager {
     }
 
 
-
-
-    private LinkedList<BaseLogger> loggers = new LinkedList<BaseLogger>();
+    public LinkedList<BaseLogger> loggers = new LinkedList<BaseLogger>();
 
 
     public void add(BaseLogger b) {
         loggers.add(b);
-        b.setLogTimer(0);
+        b.enabled(true);
     }
 
 

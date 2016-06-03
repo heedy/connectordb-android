@@ -22,13 +22,13 @@ public class ScreenOnLogger extends BaseLogger {
 
 
     public ScreenOnLogger(Context c) {
-        super("ScreenOnLogger","screen_on",
-                "boolean","","{\"type\":\"boolean\"}",c);
+        super("screenon","{\"type\":\"boolean\"}","Screen On","True when the device screen is on",
+                "boolean","",c);
     }
 
     @Override
-    public void setLogTimer(int value) {
-        if (value == -1) {
+    public void enabled(boolean value) {
+        if (!value) {
             log("Disabling");
             context.unregisterReceiver(phoneReceiver);
         } else {
@@ -40,10 +40,6 @@ public class ScreenOnLogger extends BaseLogger {
         }
     }
 
-    @Override
-    public String getSettingSchema() {
-        return ("{}").replace('\'','"');
-    }
 
     public void close() {
         log("Shutting down");
