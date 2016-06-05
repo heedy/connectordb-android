@@ -29,7 +29,8 @@ const storageMiddleware = storage.createMiddleware(engine);
 let store = applyMiddleware(thunk, storageMiddleware)(createStore)(reducer);
 
 storage.createLoader(engine)(store).then((loadedState) => {
-    console.log(loadedState);
+    // This should not be shown in production builds
+    // console.log(loadedState);
     store.dispatch(getLoggers());
 });
 
