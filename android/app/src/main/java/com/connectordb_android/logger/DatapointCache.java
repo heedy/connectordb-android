@@ -13,6 +13,12 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+
+import com.connectordb.client.ConnectorDB;
+import com.connectordb.client.RequestFailedException;
+import com.connectordb.client.Stream;
+
+
 /**
  * DatapointCache holds an SQLite database which manages all of the information needed to
  * perform data gathering and syncing to ConnectorDB in the background.
@@ -24,7 +30,7 @@ import java.util.Iterator;
  * The DatapointCache also manages synchronization with ConnectorDB
  */
 public class DatapointCache extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String TAG = "DatapointCache";
     public static final String DATABASE_NAME = "DatapointCache.db";
 
@@ -303,108 +309,114 @@ public class DatapointCache extends SQLiteOpenHelper {
         String devicename = this.getKey("devicename");
         String apikey = this.getKey("__apikey");
 
-        /*
-        ConnectorDB cdb;
+        ConnectorDB cdb = new ConnectorDB("",apikey,server);
+
+
         try {
-            cdb=new ConnectorDB(server,devicename,apikey);
-        } catch (IllegalStateException e) {
-            Log.e(TAG,"Could not initialize connectordb");
-            return false;
-        }
 
-        if (!cdb.Ping()) {
-            Log.e(TAG,"Ping failed");
-            return false;
-        }*/
-
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        //For each stream in database
-        Cursor res = db.rawQuery("SELECT streamname FROM streams", new String[]{});
-        int resultcount = res.getCount();
-        if (resultcount ==0 ) {
-            Log.i(TAG,"No streams to sync");
-            return true;
-        }
-
-        for (int i =0; i<resultcount; i++) {
-            res.moveToNext();
-            String streamname = res.getString(0);
-
-            Log.v(TAG,"Syncing stream "+streamname);
+            // Try pinging the server - if it works, and the device names match, we're good to go!
+            if (!cdb.ping().equals(devicename)) {
+                throw new Exception("Devices not equal");
+            }
 
 
-            // Get the datapoints for the stream - and don't include any weird future datapoints if they exist
-            double queryTime = ((double)System.currentTimeMillis())/1000.0;
+            // OK - we're good to go!
 
-            Cursor dta = db.rawQuery("SELECT timestamp,data FROM cache WHERE streamname=? AND timestamp <=? ORDER BY timestamp ASC;", new String[]{streamname,Double.toString(queryTime)});
-            int dtacount = dta.getCount();
 
-            if (dtacount > 0) {
-                /*
-                // Check if the stream exists
-                if (!cdb.HasStream(streamname)) {
-                    Log.w(TAG,"Stream does not exist: "+streamname);
-                    //Create the stream
-                    Cursor res2 = db.rawQuery("SELECT schema,datatype,icon FROM streams WHERE streamname=?", new String[]{},String[]{streamname});
-                    res2.moveToNext();
-                    String schema = res.getString(0);
-                    String datatype = res.getString(1);
-                    String icon = res.getString(2);
-                    if (!cdb.CreateStream(streamname,schema)) {
-                        Log.e(TAG,"Creating stream failed: "+streamname);
-                        return false;
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            //For each stream in database
+            Cursor res = db.rawQuery("SELECT streamname FROM streams", new String[]{});
+            int resultcount = res.getCount();
+            if (resultcount ==0 ) {
+                Log.i(TAG,"No streams to sync");
+                return true;
+            }
+
+            for (int i =0; i<resultcount; i++) {
+                res.moveToNext();
+                String streamname = res.getString(0);
+
+                Log.v(TAG, "Syncing stream " + streamname);
+
+
+                // Get the datapoints for the stream - and don't include any weird future datapoints if they exist
+                double queryTime = ((double) System.currentTimeMillis()) / 1000.0;
+
+                Cursor dta = db.rawQuery("SELECT timestamp,data FROM cache WHERE streamname=? AND timestamp <=? ORDER BY timestamp ASC;", new String[]{streamname, Double.toString(queryTime)});
+                int dtacount = dta.getCount();
+
+                if (dtacount > 0) {
+                    try {
+                        Stream s = cdb.getStream(devicename + "/" + streamname);
+                    } catch (RequestFailedException ex) {
+                        // The request failed. This is presumably because the stream doesn't exist.
+                        // therefore, we try creating it!
+                        Log.w(TAG, "Stream does not exist: " + streamname + " because error was " + ex.response.msg+". Creating stream.");
+                        Cursor streamcursor = db.rawQuery("SELECT * FROM streams WHERE streamname=?", new String[]{streamname});
+                        if (!streamcursor.moveToFirst()) {
+                            throw new Exception("STREAM DOES NOT EXIST IN DATABASE!");
+                        }
+                        Stream s = new Stream();
+                        s.setSchema(streamcursor.getString(streamcursor.getColumnIndex("schema")));
+                        s.setDatatype(streamcursor.getString(streamcursor.getColumnIndex("datatype")));
+                        s.setIcon(streamcursor.getString(streamcursor.getColumnIndex("icon")));
+                        s.setNickname(streamcursor.getString(streamcursor.getColumnIndex("nickname")));
+                        s.setDescription(streamcursor.getString(streamcursor.getColumnIndex("description")));
+                        streamcursor.close();
+
+
+                        cdb.createStream(devicename + "/" + streamname, s);
                     }
-                    res2.close();
+
+
+                    Log.i(TAG, "Writing " + dtacount + " datapoints to " + streamname);
+
+                    //Get the most recently inserted timestamp
+                    double oldtime = 0;
+                    String keyname = "sync_oldtime_" + streamname;
+                    try {
+                        oldtime = Double.parseDouble(getKey(keyname));
+                    } catch (NumberFormatException nfe) {
+                    }
+
+                    StringBuilder totaldata = new StringBuilder();
+                    totaldata.append("[");
+                    for (int j = 0; j < dtacount; j++) {
+                        dta.moveToNext();
+                        double timestamp = dta.getDouble(0);
+                        if (timestamp > oldtime) {
+                            oldtime = timestamp;
+                            totaldata.append("{\"t\": ");
+                            totaldata.append(timestamp);
+                            totaldata.append(", \"d\": ");
+                            totaldata.append(dta.getString(1));
+                            totaldata.append("},");
+                        } else {
+                            Log.w(TAG, streamname + ": Skipping duplicate timestamp");
+                        }
+                    }
+                    String totaldatas = totaldata.toString();
+                    totaldatas = totaldatas.substring(0, totaldata.length() - 1) + "]";
+
+                    if (totaldatas.length() > 1) {
+                        cdb.insertJson(devicename + "/" + streamname,totaldatas);
+
+                        //Now delete the data from the cache
+                        db.execSQL("DELETE FROM cache WHERE streamname=? AND timestamp <=?",new Object[]{streamname, oldtime});
+
+                        setKey(keyname, Double.toString(oldtime),null);
+                    }
+
                 }
-            */
             }
 
-            Log.i(TAG,"Writing "+dtacount+" datapoints to "+streamname);
-
-            //Get the most recently inserted timestamp
-            double oldtime = 0;
-            String keyname = "sync_oldtime_"+streamname;
-            try {
-                oldtime = Double.parseDouble(getKey(keyname));
-            } catch(NumberFormatException nfe) {}
-
-            StringBuilder totaldata = new StringBuilder();
-            totaldata.append("[");
-            for (int j=0; j< dtacount; j++) {
-                dta.moveToNext();
-                double timestamp = dta.getDouble(0);
-                if (timestamp>oldtime) {
-                    oldtime = timestamp;
-                    totaldata.append("{\"t\": ");
-                    totaldata.append(timestamp);
-                    totaldata.append(", \"d\": ");
-                    totaldata.append(dta.getString(1));
-                    totaldata.append("},");
-                } else {
-                    Log.w(TAG,streamname+": Skipping duplicate timestamp");
-                }
-            }
-            String totaldatas = totaldata.toString();
-            totaldatas = totaldatas.substring(0, totaldata.length()-1)+"]";
-
-            if (totaldatas.length()>1) {
-                /*
-                if (!cdb.insert(streamname,totaldatas)) {
-                    Log.e(TAG,"FAILED TO INSERT "+streamname);
-                    return false;
-                }
-
-                //Now delete the data from the cache
-                db.execSQL("DELETE FROM cache WHERE streamname=? AND timestamp <=?",new Object[]{streamname, oldtime});
-
-                setKey(keyname, Double.toString(oldtime));
-                */
-            }
-
+        } catch (Exception ex) {
+            Log.e(TAG, "sync: ", ex);
+            return false;
         }
 
-        Log.v(TAG,"Sync successful");
+        Log.v(TAG,"Sync successful - " + Integer.toString(size()) + " datapoints left");
         return true;
     }
 }

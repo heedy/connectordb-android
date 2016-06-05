@@ -140,6 +140,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.0'
 
     compile fileTree(dir: "libs", include: ["*.jar"])
+
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
 
@@ -149,7 +150,10 @@ dependencies {
     compile "com.google.android.gms:play-services-base:8.4.0"
 
 
-
+    // These two are needed for connectordb library
+    compile 'com.squareup.okhttp3:okhttp:3.3.1'
+    // http://mvnrepository.com/artifact/com.google.code.gson/gson
+    compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
 
 }
 

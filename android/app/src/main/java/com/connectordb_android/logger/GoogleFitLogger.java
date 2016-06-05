@@ -108,6 +108,7 @@ public abstract class GoogleFitLogger extends BaseLogger implements DatapointCac
                     endTime = et;
                 }
             }
+            db.setTransactionSuccessful();
             db.endTransaction();
 
             kvSet("fit_startTime", Long.toString(endTime));
