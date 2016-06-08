@@ -15,7 +15,7 @@ The app gathers the following in the background:
 - [x] Screen on/off
 - [ ] Active App
 
-![screenshot](https://raw.githubusercontent.com/connectordb/connectordb-android/master/screenshot.png)
+<img src="https://raw.githubusercontent.com/connectordb/connectordb-android/master/screenshot.png" width="300"/>
 
 ## Structure
 
