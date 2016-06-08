@@ -1,5 +1,7 @@
 # ConnectorDB Mobile App
 
+[Download from Google Play](https://play.google.com/store/apps/details?id=com.connectordb_android)
+
 This is the ConnectorDB android app. While our usage of React Native enables IOS to use a similar UI, the data-gathering extensively uses native android APIs, so it would need to be rewritten specifically for IOS.
 
 ## Data Gathering
@@ -12,6 +14,8 @@ The app gathers the following in the background:
 - [x] Location (GPS)
 - [x] Screen on/off
 - [ ] Active App
+
+![screenshot](https://raw.githubusercontent.com/connectordb/connectordb-android/master/screenshot.png)
 
 ## Structure
 
