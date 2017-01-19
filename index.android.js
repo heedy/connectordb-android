@@ -1,48 +1,53 @@
-'use strict';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ * @flow
+ */
 
-global.Buffer = global.Buffer || require('buffer').Buffer;
+import React, { Component } from 'react';
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
 
-import React, {Component} from 'react';
-import {AppRegistry, Text} from 'react-native';
-
-import {Provider} from 'react-redux'
-import {createStore, applyMiddleware, combineReducers} from 'redux'
-// dispatching from actions
-import thunk from 'redux-thunk'
-
-import {reducers} from './src/reducers/index';
-
-import {getLoggers} from './src/actions/logger';
-
-// App is the main component that sets up the app
-import App from './src/app';
-
-// Set up the redux state storage
-import * as storage from 'redux-storage'
-import createEngine from 'redux-storage-engine-reactnativeasyncstorage';
-
-// Copy paste from https://github.com/michaelcontento/redux-storage
-const reducer = storage.reducer(combineReducers(reducers));
-const engine = createEngine("connectordb");
-const storageMiddleware = storage.createMiddleware(engine);
-
-let store = applyMiddleware(thunk, storageMiddleware)(createStore)(reducer);
-
-storage.createLoader(engine)(store).then((loadedState) => {
-    // This should not be shown in production builds
-    // console.log(loadedState);
-    store.dispatch(getLoggers());
-});
-
-class Connectordb extends Component {
-    render() {
-        return (
-            <Provider store={store}>
-                <App/>
-            </Provider>
-        );
-
-    }
+export default class connectordb_android extends Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.welcome}>
+          Welcome to React Native!
+        </Text>
+        <Text style={styles.instructions}>
+          To get started, edit index.android.js
+        </Text>
+        <Text style={styles.instructions}>
+          Double tap R on your keyboard to reload,{'\n'}
+          Shake or press menu button for dev menu
+        </Text>
+      </View>
+    );
+  }
 }
 
-AppRegistry.registerComponent('connectordb_android', () => Connectordb);
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+  },
+});
+
+AppRegistry.registerComponent('connectordb_android', () => connectordb_android);

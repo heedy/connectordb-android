@@ -1,6 +1,6 @@
 # ConnectorDB Mobile App
 
-[Download from Google Play](https://play.google.com/store/apps/details?id=com.connectordb_android)
+<a href='https://play.google.com/store/apps/details?id=com.connectordb_android&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width="250" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
 
 This is the ConnectorDB android app. While our usage of React Native enables IOS to use a similar UI, the data-gathering extensively uses native android APIs, so it would need to be rewritten specifically for IOS.
 
@@ -79,3 +79,8 @@ The app was made with extensibility in mind. `android/app/src/main/java/com/conn
 You can directly follow the instructions given in the react native docs. You don't even need to run android studio, as the entire UI is in javascript. If the code seems alien, please look at http://redux.js.org/docs/basics/UsageWithReact.html for a tutorial in React Redux.
 
 I am not a designer, so any help would be greatly appreciated.
+
+
+## Attribution
+
+Google Play and the Google Play logo are trademarks of Google Inc.

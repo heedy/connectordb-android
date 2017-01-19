@@ -1,0 +1,24 @@
+{
+  "name": "connectordb_android",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "dependencies": {
+    "buffer": "^4.6.0",
+    "connectordb": "0.0.7",
+    "react": "15.0.2",
+    "react-native": "0.26.2",
+    "react-native-floating-label-text-input": "0.0.9",
+    "react-native-material-design": "0.3.6",
+    "react-redux": "4.4.5",
+    "redux": "3.5.2",
+    "redux-storage": "4.0.0",
+    "redux-storage-decorator-filter": "1.1.4",
+    "redux-storage-engine-reactnativeasyncstorage": "1.0.0",
+    "redux-thunk": "^2.1.0",
+    "tcomb-form-native": "^0.5.1",
+    "tcomb-json-schema": "^0.3.0"
+  }
+}
