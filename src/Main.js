@@ -7,6 +7,7 @@ import * as Actions from './actions';
 import { StatusBar, View } from 'react-native';
 
 import FacebookTabBar from './components/FacebookTabBar';
+import ErrorBar from './components/ErrorBar';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 
 
@@ -20,11 +21,12 @@ const Main = ({state, actions}) => (
             backgroundColor="#009e42"
             barStyle="light-content"
             />
-        <ScrollableTabView renderTabBar={() => <FacebookTabBar />}>
+        <ScrollableTabView renderTabBar={() => <FacebookTabBar />} locked={true}>
             <Inputs tabLabel="ios-star" />
             <Downlinks tabLabel="ios-bulb" />
             <Settings tabLabel="ios-settings" />
         </ScrollableTabView>
+        <ErrorBar error={state.error} />
     </View>
 );
 

@@ -1,6 +1,7 @@
 const InitialState = {
     refreshing: false,
-    streams: []
+    streams: [],
+    error: { text: "", color: "red" }
 };
 
 export default function reducer(state = InitialState, action) {

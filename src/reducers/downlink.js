@@ -1,6 +1,7 @@
 const InitialState = {
     refreshing: false,
-    streams: []
+    streams: [],
+    error: ""
 };
 
 export default function reducer(state = InitialState, action) {
@@ -14,6 +15,11 @@ export default function reducer(state = InitialState, action) {
             return {
                 ...state,
                 streams: action.value
+            };
+        case 'DOWNLINK_ERROR':
+            return {
+                ...state,
+                error: action.value
             };
     }
     return state;

@@ -11,10 +11,13 @@ let cdb = new ConnectorDB("test", "test", "http://10.0.2.2:8000")
 export function* refreshDownlinks() {
     yield put({ type: 'DOWNLINK_REFRESHING', value: true });
     try {
-        let u = yield cdb.readUser("test");
+        console.log("GETTING USER");
+        let u = yield cdb.readUser("tree");
+        if (u.msg !== undefined) throw u.msg;
         yield put({ type: 'UPDATE_DOWNLINKS', value: u });
     } catch (err) {
         console.log(err);
+        yield put({ type: "SHOW_ERROR", value: { text: err.toString(), color: "red" } })
     }
     yield put({ type: 'DOWNLINK_REFRESHING', value: false });
 }
