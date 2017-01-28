@@ -6,13 +6,32 @@ import { put, takeEvery, select } from 'redux-saga/effects'
 global.Buffer = global.Buffer || require('buffer').Buffer;
 import { ConnectorDB } from 'connectordb';
 
-let cdb = new ConnectorDB("test", "test", "http://10.0.2.2:8000")
+let cdb = new ConnectorDB("test", "test", "http://10.0.2.2:3124")
+
+// https://github.com/github/fetch/issues/175 - copied from comment by nodkz
+function timeoutPromise(promise, ms = 5000) {
+    return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+            reject(new Error("Could not connect to ConnectorDB"))
+        }, ms);
+        promise.then(
+            (res) => {
+                clearTimeout(timeoutId);
+                resolve(res);
+            },
+            (err) => {
+                clearTimeout(timeoutId);
+                reject(err);
+            }
+        );
+    })
+}
 
 export function* refreshDownlinks() {
     yield put({ type: 'DOWNLINK_REFRESHING', value: true });
     try {
         console.log("GETTING USER");
-        let u = yield cdb.readUser("tree");
+        let u = yield timeoutPromise(cdb.readUser("tree"));
         if (u.msg !== undefined) throw u.msg;
         yield put({ type: 'UPDATE_DOWNLINKS', value: u });
     } catch (err) {
@@ -25,10 +44,11 @@ export function* refreshDownlinks() {
 export function* refreshInputs() {
     yield put({ type: 'INPUT_REFRESHING', value: true });
     try {
-        let streams = yield cdb.listStreams("test", "user");
+        let streams = yield timeoutPromise(cdb.listStreams("test", "user"));
         yield put({ type: 'UPDATE_INPUTS', value: streams });
     } catch (err) {
         console.log(err);
+        yield put({ type: "SHOW_ERROR", value: { text: err.toString(), color: "red" } })
     }
     yield put({ type: 'INPUT_REFRESHING', value: false });
 }
