@@ -21,7 +21,7 @@ const Main = ({state, actions}) => (
             backgroundColor="#009e42"
             barStyle="light-content"
             />
-        <ScrollableTabView renderTabBar={() => <FacebookTabBar />} locked={true}>
+        <ScrollableTabView renderTabBar={() => <FacebookTabBar />} locked={true} >
             <Inputs tabLabel="ios-star" />
             <Downlinks tabLabel="ios-bulb" />
             <Settings tabLabel="ios-settings" />

@@ -13,6 +13,9 @@ import sagas from './sagas';
 // All state changes happen through the reducers
 import reducers from './reducers';
 
+// Set up all the input types
+import './components/inputs/registry';
+
 import Main from './Main';
 
 const sagaMiddleware = createSagaMiddleware();

@@ -9,6 +9,7 @@ import { ScrollView, View, Text, RefreshControl } from 'react-native';
 
 const Render = ({state, actions}) => (
     <ScrollView style={styles.tabView}
+        contentContainerStyle={styles.tabViewRefreshContainer}
         refreshControl={
             <RefreshControl refreshing={state.downlinks.refreshing} onRefresh={actions.refreshDownlinks} />
         }

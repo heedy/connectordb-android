@@ -5,6 +5,11 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         backgroundColor: 'rgba(0,0,0,0.01)',
+        marginTop: 10,
+        marginBottom: 20
+    },
+    tabViewRefreshContainer: {
+        marginRight: -20    // WTF react ntaive - why does a pull to refresh make stuff misaligned?
     },
     card: {
         borderWidth: 1,
