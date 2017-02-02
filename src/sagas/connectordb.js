@@ -44,17 +44,28 @@ export function* refreshDownlinks() {
 export function* refreshInputs() {
     yield put({ type: 'INPUT_REFRESHING', value: true });
     try {
-        let streams = yield timeoutPromise(cdb.listStreams("test", "user"));
+        let username = yield select((state) => state.main.user);
+        let streams = yield timeoutPromise(cdb.listStreams(username, "user"));
         yield put({ type: 'UPDATE_INPUTS', value: streams });
     } catch (err) {
         console.log(err);
-        yield put({ type: "SHOW_ERROR", value: { text: err.toString(), color: "red" } })
+        yield put({ type: "SHOW_ERROR", value: { text: err.toString(), color: "red" } });
     }
     yield put({ type: 'INPUT_REFRESHING', value: false });
 }
 
+export function* insertStream(action) {
+    try {
+        yield timeoutPromise(cdb.insertNow(action.username, action.devicename, action.streamname, action.value));
+    } catch (err) {
+        console.log(err);
+        yield put({ type: "SHOW_ERROR", value: { text: err.toString(), color: "red" } });
+    }
+}
+
 // Our watcher Saga: spawn a new incrementAsync task on each INCREMENT_ASYNC
 export default function* connectordbSaga() {
+    yield takeEvery('INSERT_STREAM', insertStream);
     yield takeEvery('REFRESH_DOWNLINKS', refreshDownlinks);
     yield takeEvery('REFRESH_INPUTS', refreshInputs);
 }

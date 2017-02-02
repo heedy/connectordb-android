@@ -14,3 +14,13 @@ export function refreshDownlinks() {
 export function refreshInputs() {
     return { type: "REFRESH_INPUTS" };
 }
+
+export function insert(username, devicename, streamname, data) {
+    return {
+        type: "INSERT_STREAM",
+        username: username,
+        devicename: devicename,
+        streamname: streamname,
+        value: data
+    };
+}
