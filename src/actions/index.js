@@ -24,3 +24,10 @@ export function insert(username, devicename, streamname, data) {
         value: data
     };
 }
+
+export function setLogin(value) {
+    return {
+        type: "SET_LOGIN",
+        value: value
+    };
+}
