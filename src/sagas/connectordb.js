@@ -6,6 +6,8 @@ import { put, takeEvery, select } from 'redux-saga/effects'
 global.Buffer = global.Buffer || require('buffer').Buffer;
 import { ConnectorDB } from 'connectordb';
 
+import { ToastAndroid } from 'react-native';
+
 let cdb = new ConnectorDB("test", "test", "http://10.0.2.2:3124")
 
 // https://github.com/github/fetch/issues/175 - copied from comment by nodkz
@@ -45,7 +47,7 @@ export function* refreshInputs() {
     yield put({ type: 'INPUT_REFRESHING', value: true });
     try {
         let username = yield select((state) => state.main.user);
-        let streams = yield timeoutPromise(cdb.listStreams(username, "user"));
+        let streams = (yield timeoutPromise(cdb.listStreams(username, "user"))).map((s) => ({ ...s, schema: JSON.parse(s.schema) }));
         yield put({ type: 'UPDATE_INPUTS', value: streams });
     } catch (err) {
         console.log(err);
@@ -57,6 +59,7 @@ export function* refreshInputs() {
 export function* insertStream(action) {
     try {
         yield timeoutPromise(cdb.insertNow(action.username, action.devicename, action.streamname, action.value));
+        ToastAndroid.show("Inserted " + String(action.value), ToastAndroid.SHORT);
     } catch (err) {
         console.log(err);
         yield put({ type: "SHOW_ERROR", value: { text: err.toString(), color: "red" } });

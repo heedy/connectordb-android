@@ -59,7 +59,7 @@ export default App
 
 // TEMPORARY CODE: Get past the loading screen, since we don't yet have app storage
 // configured
-/*
+
 store.dispatch({
     type: "SET_CREDENTIALS", value: {
         url: "http://10.0.2.2:3124",
@@ -67,6 +67,6 @@ store.dispatch({
         apikey: "2911e03a-e0ef-4e8c-6515-dd3bfdb24174"
     }
 });
-*/
+
 
 setTimeout(() => store.dispatch({ type: "LOAD_FINISHED" }), 500);

@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 
 import StarRating from 'react-native-star-rating';
 
-import { addInput } from './index';
+import { addInput } from './input';
 
 addInput("rating.stars", ({stream, insert}) => (
     <View>
@@ -18,6 +18,6 @@ addInput("rating.stars", ({stream, insert}) => (
             starColor={'rgb(59,89,152)'}
             starSize={34}
             selectedStar={(rating) => insert(rating)}
-            />
+        />
     </View>
 ));

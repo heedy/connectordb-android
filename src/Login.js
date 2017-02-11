@@ -50,6 +50,8 @@ const Main = ({state, actions}) => (
                 <Text style={{ paddingTop: 5, paddingLeft: 10 }}>Only sync on wifi</Text>
             </View>
         </View>
+        <View style={{ height: 30 }}>
+        </View>
 
     </ScrollView>
 );
