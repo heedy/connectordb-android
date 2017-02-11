@@ -32,10 +32,9 @@ function timeoutPromise(promise, ms = 5000) {
 export function* refreshDownlinks() {
     yield put({ type: 'DOWNLINK_REFRESHING', value: true });
     try {
-        console.log("GETTING USER");
-        let u = yield timeoutPromise(cdb.readUser("tree"));
-        if (u.msg !== undefined) throw u.msg;
-        yield put({ type: 'UPDATE_DOWNLINKS', value: u });
+        let username = yield select((state) => state.main.user);
+        let streams = (yield timeoutPromise(cdb.listUserStreams(username, "*", false, true, true))).map((s) => ({ ...s, schema: JSON.parse(s.schema) }));
+        yield put({ type: 'UPDATE_DOWNLINKS', value: streams });
     } catch (err) {
         console.log(err);
         yield put({ type: "SHOW_ERROR", value: { text: err.toString(), color: "red" } })
