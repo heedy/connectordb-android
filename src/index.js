@@ -70,7 +70,9 @@ store.dispatch({
 store.dispatch({
     type: "SET_LOGIN",
     value: { server: "http://192.168.1.122:3124" }
-})
+});
 
-
-setTimeout(() => store.dispatch({ type: "LOAD_FINISHED" }), 500);
+// Loads all saved values from storage. The loading screen will be hidden when values 
+// are all loaded.
+store.dispatch({ type: "LOAD_STORAGE" });
+// store.dispatch({ type: "LOAD_FINISHED" }); // For use when debugging without backend storage.
