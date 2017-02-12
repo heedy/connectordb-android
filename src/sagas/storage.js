@@ -41,6 +41,11 @@ function* loadStorage() {
     yield put({ type: "LOAD_FINISHED" });
 }
 
+// Clear the keys when logging out
+function* logOut() {
+    yield call(AsyncStorage.multiRemove, [CREDENTIALS, INPUTS, DOWNLINKS]);
+}
+
 function* updater(action, key) {
     if (action.storage !== undefined && !action.storage) {
         return; // We don't want to store things that were called from storage code.
@@ -71,6 +76,7 @@ function* updateDownlinks(action) {
 // Our watcher Saga: spawn a new incrementAsync task on each INCREMENT_ASYNC
 export default function* storageSaga() {
     yield takeEvery('LOAD_STORAGE', loadStorage);
+    yield takeEvery('LOGOUT', logOut);
 
 
     yield takeEvery('SET_CREDENTIALS', setCredentials);

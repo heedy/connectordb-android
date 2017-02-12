@@ -16,6 +16,8 @@ export default function reducer(state = InitialState, action) {
                 ...state,
                 streams: action.value
             };
+        case 'LOGOUT':
+            return InitialState;
     }
     return state;
 }

@@ -23,6 +23,8 @@ export default function mainReducer(state = InitialState, action) {
             };
             newstate.cdb = new ConnectorDB(newstate.apikey, undefined, newstate.url);
             return newstate;
+        case 'LOGOUT':
+            return { ...InitialState, loaded: true };
     }
     return state;
 }

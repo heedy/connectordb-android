@@ -19,6 +19,8 @@ export default function mainReducer(state = InitialState, action) {
                 ...state,
                 status: action.value
             };
+        case 'LOGOUT':
+            return InitialState;
     }
     return state;
 }
