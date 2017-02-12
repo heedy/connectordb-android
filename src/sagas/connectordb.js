@@ -39,10 +39,6 @@ function cdbPromise(promise, ms = 5000) {
 
 export function* refreshDownlinks() {
     let cdb = yield select((state) => state.main.cdb);
-    console.log("-----------------------------------------------");
-    console.log(yield cdb.listStreams());
-    console.log("HERE IS CDB", cdb);
-    console.log("-----------------------------------------------");
     yield put({ type: 'DOWNLINK_REFRESHING', value: true });
     try {
         let username = yield select((state) => state.main.user);

@@ -1,8 +1,9 @@
 const InitialState = {
     url: "",
     user: "",
-    apikey: "",
-    cdb: null,  // This holds the logged-in ConnectorDB object
+    apikey: "",     // The main api key that gives access to the ratings and such
+    dapikey: "",    // The API key that gives write access to the device in which we log data.
+    cdb: null,      // This holds the logged-in ConnectorDB object
     loaded: false   // This becomes true when the relevant data is loaded from app storage
 };
 

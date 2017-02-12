@@ -70,7 +70,7 @@ store.dispatch({
 store.dispatch({
     type: "SET_LOGIN",
     value: { server: "http://192.168.1.122:3124" }
-})/**/
+})
 
 
 setTimeout(() => store.dispatch({ type: "LOAD_FINISHED" }), 500);

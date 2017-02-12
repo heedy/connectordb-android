@@ -8,7 +8,7 @@ Login is separated into two parts:
 */
 
 import { Alert, ToastAndroid } from 'react-native';
-import { put, takeEvery, select } from 'redux-saga/effects'
+import { put, takeEvery, select, call } from 'redux-saga/effects'
 import semver from 'semver';
 import { ConnectorDB } from 'connectordb';
 
@@ -30,6 +30,15 @@ function timeoutPromise(promise, ms = 5000) {
         );
     })
 }
+// This function wraps the promises of connectordb so that a failed login attempt gives the correct error message.
+function cdbPromise(promise, ms = 5000) {
+    return timeoutPromise(promise, ms).then(function (res) {
+        if (res.ref !== undefined) {
+            throw new Error(res.msg);
+        }
+        return res;
+    });
+}
 
 function* failLogin(err) {
     yield put({ type: "LOAD_FINISHED", value: true });
@@ -46,7 +55,9 @@ export function* appLogin() {
     let result = {
         url: login.server,
         user: login.username,
-        apikey: ""  // apikey will be queried in a moment
+        apikey: "",  // apikey will be queried in a moment
+        devicename: login.devicename,
+        dapikey: "" // The deice api key is set later
     };
 
     if (login.username === "") {
@@ -99,7 +110,7 @@ export function* appLogin() {
         }
 
     } catch (err) {
-        yield failLogin(err);
+        yield* failLogin(err);
         return;
     }
 
@@ -112,31 +123,52 @@ export function* appLogin() {
 
         // Check if twe can log in
         if ((yield cdb._doRequest("?q=this", "GET")).code !== undefined) {
-            yield failLogin("Incorrect username or password");
+            yield* failLogin("Incorrect username or password");
             return;
         }
 
         // OK, our credentials were accepted. That means that we're good to go.
 
         // First: we get the apikey for the user device, so that we don't need to store the password
-        result["apikey"] = (yield cdb.readDevice(login.username, "user")).apikey;
+        result.apikey = (yield cdbPromise(cdb.readDevice(login.username, "user"))).apikey;
 
 
 
         // Create a device for the phone
         yield put({ type: "LOGIN_STATUS", value: "Setting up " + login.devicename + " device" });
 
+        // Try to get the device - to check if this device exists already
+        let dev = yield timeoutPromise(cdb.readDevice(login.username, login.devicename));
+        if (dev.ref === undefined) {
+            // The device exists! We need to explicitly check if the user is OK with overwriting the device
+            result.dapikey = dev.apikey;
 
+
+            let overwrite = yield new Promise((resolve, reject) => {
+                Alert.alert("Device Exists", "A device named '" + login.devicename + "' already exists. It might be in use by another app. Overwrite the device?",
+                    [{ text: "No", onPress: () => resolve(false) }, { text: "Yes", onPress: () => resolve(true) }], { cancelable: false })
+
+            });
+
+            if (overwrite === true) {
+                yield put({ type: "DEVICE_LOGIN", value: result });
+                return;
+            }
+
+            yield* failLogin("Device with this name already exists");
+            return;
+        }
+
+        // The device doesn't exist. Create it.
+        dev = yield cdbPromise(cdb.createDevice(login.username, { name: login.devicename, icon: "material:android", description: "Mobile data-gathering app" }));
+        result.dapikey = dev.apikey;
+
+        // Good to go :)
+        yield put({ type: "DEVICE_LOGIN", value: result });
     } catch (err) {
-        yield failLogin(err);
+        yield* failLogin(err);
         return;
     }
-
-
-
-    yield put({ type: "DEVICE_LOGIN", value: result });
-
-
 }
 
 export function* deviceLogin(action) {
