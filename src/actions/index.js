@@ -31,3 +31,7 @@ export function setLogin(value) {
         value: value
     };
 }
+
+export function login() {
+    return { type: "LOGIN" };
+}

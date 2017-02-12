@@ -8,8 +8,6 @@ import { ConnectorDB } from 'connectordb';
 
 import { ToastAndroid } from 'react-native';
 
-let cdb = new ConnectorDB("test", "test", "http://10.0.2.2:3124")
-
 // https://github.com/github/fetch/issues/175 - copied from comment by nodkz
 function timeoutPromise(promise, ms = 5000) {
     return new Promise((resolve, reject) => {
@@ -29,11 +27,26 @@ function timeoutPromise(promise, ms = 5000) {
     })
 }
 
+// This function wraps the promises of connectordb so that a failed login attempt gives the correct error message.
+function cdbPromise(promise, ms = 5000) {
+    return timeoutPromise(promise, ms).then(function (res) {
+        if (res.ref !== undefined) {
+            throw new Error(res.msg);
+        }
+        return res;
+    });
+}
+
 export function* refreshDownlinks() {
+    let cdb = yield select((state) => state.main.cdb);
+    console.log("-----------------------------------------------");
+    console.log(yield cdb.listStreams());
+    console.log("HERE IS CDB", cdb);
+    console.log("-----------------------------------------------");
     yield put({ type: 'DOWNLINK_REFRESHING', value: true });
     try {
         let username = yield select((state) => state.main.user);
-        let streams = (yield timeoutPromise(cdb.listUserStreams(username, "*", false, true, true))).map((s) => ({ ...s, schema: JSON.parse(s.schema) }));
+        let streams = (yield cdbPromise(cdb.listUserStreams(username, "*", false, true, true))).map((s) => ({ ...s, schema: JSON.parse(s.schema) }));
         yield put({ type: 'UPDATE_DOWNLINKS', value: streams });
     } catch (err) {
         console.log(err);
@@ -43,10 +56,11 @@ export function* refreshDownlinks() {
 }
 
 export function* refreshInputs() {
+    let cdb = yield select((state) => state.main.cdb);
     yield put({ type: 'INPUT_REFRESHING', value: true });
     try {
         let username = yield select((state) => state.main.user);
-        let streams = (yield timeoutPromise(cdb.listStreams(username, "user"))).map((s) => ({ ...s, schema: JSON.parse(s.schema) }));
+        let streams = (yield cdbPromise(cdb.listStreams(username, "user"))).map((s) => ({ ...s, schema: JSON.parse(s.schema) }));
         yield put({ type: 'UPDATE_INPUTS', value: streams });
     } catch (err) {
         console.log(err);
@@ -56,8 +70,9 @@ export function* refreshInputs() {
 }
 
 export function* insertStream(action) {
+    let cdb = yield select((state) => state.main.cdb);
     try {
-        yield timeoutPromise(cdb.insertNow(action.username, action.devicename, action.streamname, action.value));
+        yield cdbPromise(cdb.insertNow(action.username, action.devicename, action.streamname, action.value));
         ToastAndroid.show("Inserted " + String(action.value), ToastAndroid.SHORT);
     } catch (err) {
         console.log(err);

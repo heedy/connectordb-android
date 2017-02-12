@@ -26,10 +26,23 @@ const Main = ({state, actions}) => (
                 onChangeText={(u) => actions.setLogin({ username: u })} />
             <TextInput placeholder="Password" secureTextEntry={true} value={state.login.password}
                 onChangeText={(p) => actions.setLogin({ password: p })} />
-            <TextInput placeholder="Server" autoCorrect={false} keyboardType="email-address" value={state.login.server}
-                onChangeText={(s) => actions.setLogin({ server: s })} />
+            <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+                <Text style={{ marginBottom: 20, paddingRight: 10 }}>
+                    DEVICE:
+                </Text>
+                <TextInput style={{ flex: 1 }} placeholder="Device Name" autoCorrect={false}
+                    keyboardType="email-address" value={state.login.devicename}
+                    onChangeText={(d) => actions.setLogin({ devicename: d })} />
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+                <Text style={{ marginBottom: 20, paddingRight: 10 }}>
+                    SERVER:
+                </Text>
+                <TextInput style={{ flex: 1 }} placeholder="Server" autoCorrect={false} keyboardType="email-address" value={state.login.server}
+                    onChangeText={(s) => actions.setLogin({ server: s })} />
+            </View>
             <View style={{ paddingTop: 20 }}>
-                <Button onPress={() => console.log("LOGIN")} title="Log In"
+                <Button onPress={actions.login} title="Log In"
                     color='#005c9e' />
             </View>
         </View>
@@ -37,17 +50,13 @@ const Main = ({state, actions}) => (
             <Text style={styles.p}>
                 Advanced Options
             </Text>
-            <TextInput placeholder="Device Name" autoCorrect={false}
-                keyboardType="email-address" value={state.login.devicename}
-                onChangeText={(d) => actions.setLogin({ devicename: d })} />
-
-            <View style={{ flexDirection: "row", flex: 1, paddingTop: 20 }}>
-                <Switch style={{ marginBottom: 10 }} value={state.login.localnetwork} onValueChange={(s) => actions.setLogin({ localnetwork: s })} />
-                <Text style={{ paddingTop: 5, paddingLeft: 10 }}>Only sync when on this wifi network</Text>
-            </View>
             <View style={{ flexDirection: "row", flex: 1, paddingTop: 10 }}>
                 <Switch style={{ marginBottom: 10 }} value={state.login.localnetwork} onValueChange={(s) => actions.setLogin({ localnetwork: s })} />
                 <Text style={{ paddingTop: 5, paddingLeft: 10 }}>Only sync on wifi</Text>
+            </View>
+            <View style={{ flexDirection: "row", flex: 1, paddingTop: 20 }}>
+                <Switch style={{ marginBottom: 10 }} value={state.login.localnetwork} onValueChange={(s) => actions.setLogin({ localnetwork: s })} />
+                <Text style={{ paddingTop: 5, paddingLeft: 10 }}>Only sync when on this wifi network</Text>
             </View>
         </View>
         <View style={{ height: 30 }}>

@@ -12,7 +12,7 @@ import { View, ActivityIndicator, Text } from 'react-native';
 const Main = ({state, actions}) => (
     <View style={{ alignItems: 'center', justifyContent: 'center', padding: 20, flex: 1 }}>
         <ActivityIndicator animating={true} size="large" />
-        <Text>Loading...</Text>
+        <Text>{state.login.status !== "" ? state.login.status : "Loading..."}</Text>
     </View>
 );
 

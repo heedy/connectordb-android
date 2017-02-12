@@ -3,7 +3,8 @@ const InitialState = {
     password: "",
     server: "https://connectordb.com",
     devicename: "phone",
-    localnetwork: true
+    localnetwork: false,
+    status: ""
 };
 
 export default function mainReducer(state = InitialState, action) {
@@ -12,6 +13,11 @@ export default function mainReducer(state = InitialState, action) {
             return {
                 ...state,
                 ...action.value
+            };
+        case 'LOGIN_STATUS':
+            return {
+                ...state,
+                status: action.value
             };
     }
     return state;
