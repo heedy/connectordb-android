@@ -1,4 +1,4 @@
-package com.connectordb_android.logger;
+package com.connectordb_android.loggers;
 
 import android.content.Context;
 import android.location.Location;
@@ -22,8 +22,9 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
                         "\"speed\": {\"type\": \"number\"}," +
                         "\"bearing\": {\"type\": \"number\"}" +
                         "},\"required\": [\"latitude\",\"longitude\"]}",
-                "","GPS coordinates",
-                "location.gps","",c);
+                "Location","Logs your device's GPS coordinates",
+                "location.gps","material:gps_fixed",
+                "Default",true,c);
 
         // Logging GPS requires connecting the google play services
         log("Connecting to Google Play services");
@@ -68,7 +69,7 @@ public class LocationLogger extends BaseLogger implements LocationListener, Goog
 
     }
 
-    // setLogTimer sets the time in milliseconds between requested locatino updates. -1 stops updates,
+    // setLogTimer sets the time in milliseconds between requested location updates. -1 stops updates,
     // 0 sets updating in the background, and a positive value sets the update interval to the given number
     // of milliseconds
     public void setLogTimer(int value) {

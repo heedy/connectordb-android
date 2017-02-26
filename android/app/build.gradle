@@ -132,6 +132,20 @@ dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
+
+    // These two are needed for connectordb library, which is not yet synced to maven
+    // They are the dependencies... Notice how ancient they are...
+    // These two are needed for connectordb library
+    compile 'com.squareup.okhttp3:okhttp:3.3.1'
+    // http://mvnrepository.com/artifact/com.google.code.gson/gson
+    compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
+
+    // Add dependencies necessary for loggers HERE, as well as a comment specifying which logger uses them.
+
+    compile 'com.google.android.gms:play-services-location:10.2.0'  // LocationLogger
+    compile 'com.google.android.gms:play-services-fitness:10.2.0'   //
+
+
 }
 
 // Run this once to be able to run the application with BUCK

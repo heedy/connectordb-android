@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.connectordb_android.logger.LoggerService;
+import com.connectordb_android.loggers.LoggerService;
 
 /**
  * Receiver handles broadcasts to the app - it starts logging on boot, and will

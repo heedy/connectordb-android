@@ -16,6 +16,9 @@ import reducers from './reducers';
 // Set up all the input types
 import './components/inputs/registry';
 
+// Connect to the native portion of the app which logs data in background
+import { getLoggers } from './logging';
+
 import Main from './Main';
 import Loading from './Loading';
 import Login from './Login';
@@ -57,8 +60,7 @@ const App = () => {
 
 export default App
 
-// TEMPORARY CODE: Get past the loading screen, since we don't yet have app storage
-// configured
+// Code for Testing: gets past the login screen.
 /*
 store.dispatch({
     type: "SET_CREDENTIALS", value: {
@@ -69,10 +71,13 @@ store.dispatch({
 });*/
 store.dispatch({
     type: "SET_LOGIN",
-    value: { server: "http://192.168.1.122:3124" }
+    value: { server: "http://10.0.2.2:3124" }
 });
 
 // Loads all saved values from storage. The loading screen will be hidden when values 
 // are all loaded.
 store.dispatch({ type: "LOAD_STORAGE" });
 // store.dispatch({ type: "LOAD_FINISHED" }); // For use when debugging without backend storage.
+
+// Get the available background loggers
+getLoggers().then((result) => store.dispatch({ type: "SET_LOGGERS", value: result }));

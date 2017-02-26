@@ -5,27 +5,48 @@ import { bindActionCreators } from 'redux';
 import * as Actions from './actions';
 import styles from './styles';
 
-import { ScrollView, View, Text, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, Button, Switch } from 'react-native';
 
 
 const Render = ({state, actions}) => (
     <ScrollView style={styles.tabView}>
         <View style={styles.card}>
-            <Text style={styles.h1}>
-                Settings
+            <Text style={styles.p}>
+                Basic Options
             </Text>
-            <Text style={styles.p}>
-                Looks like you don't have any downlinks set up.
-          </Text>
-            <Text style={styles.p}>
-                With Downlinks, you can control things with ConnectorDB, such as your lights or thermostat.
-          </Text>
+            <View style={{ flexDirection: "row", flex: 1, paddingTop: 10 }}>
+                <Switch style={{ marginBottom: 10 }} value={state.login.localnetwork} onValueChange={(s) => actions.setLogin({ localnetwork: s })} />
+                <Text style={{ paddingTop: 5, paddingLeft: 10 }}>Gather data in background</Text>
+            </View>
+            <View style={{ flexDirection: "row", flex: 1, paddingTop: 10, paddingBottom: 10 }}>
+                <Switch style={{ marginBottom: 10 }} value={state.login.localnetwork} onValueChange={(s) => actions.setLogin({ localnetwork: s })} />
+                <Text style={{ paddingTop: 5, paddingLeft: 10 }}>Sync to ConnectorDB in background</Text>
+            </View>
+            <Button onPress={() => console.log("Sync Pressed!")} title="Sync Now" accessibilityLabel="Write cached data to ConnectorDB server" />
         </View>
-        <TouchableOpacity onPress={actions.logout}>
-            <Text style={{ color: '#005c9e' }}>
-                LOG OUT
-                        </Text>
-        </TouchableOpacity>
+        <View style={styles.card}>
+            <Text style={styles.p}>
+                Data Logging
+            </Text>
+            {Object.keys(state.settings.loggers).map(function (key) {
+                let s = state.settings.loggers[key];
+                return (
+                    <View key={key} style={{ flexDirection: "row", flex: 1, paddingTop: 10, paddingBottom: 10 }}>
+                        <Switch style={{ marginBottom: 10 }} value={state.login.localnetwork} onValueChange={(s) => actions.setLogin({ localnetwork: s })} />
+                        <View>
+                            <Text style={{ paddingTop: 5, paddingLeft: 10, paddingRight: 10, color: '#333333' }}>{s.nickname}</Text>
+                            <Text style={{ paddingTop: 5, paddingLeft: 10, paddingRight: 40 }}>{s.description}</Text>
+                        </View>
+                    </View>
+                );
+            })}
+        </View>
+        <View style={styles.card}>
+            <Text style={styles.p}>
+                Advanced
+            </Text>
+            <Button onPress={actions.logout} title="Log Out" accessibilityLabel="Log Out of ConnectorDB" />
+        </View>
     </ScrollView>
 );
 

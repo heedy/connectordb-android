@@ -6,6 +6,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- ADD PERMISSIONS FOR LOGGING EXTENSIONS HERE -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>   <!-- LocationLogger -->
+    <uses-permission android:name="android.permission.BODY_SENSORS" />  <!-- Google fit logging -->
+    <!-- END LOGGING PERMISSIONS -->
+
     <uses-sdk
         android:minSdkVersion="16"
         android:targetSdkVersion="22" />
@@ -26,6 +34,23 @@
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+
+        <service
+            android:name=".loggers.LoggerService"
+            android:enabled="true"
+            android:exported="true"
+            >
+        </service>
+
+        <receiver
+            android:name=".Receiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

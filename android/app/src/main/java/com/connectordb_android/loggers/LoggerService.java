@@ -1,4 +1,4 @@
-package com.connectordb_android.logger;
+package com.connectordb_android.loggers;
 
 import android.app.Service;
 import android.content.Intent;
@@ -32,13 +32,15 @@ public class LoggerService extends Service {
          * Initialize all loggers here. In the future, someone could figure out how to
          * set up the loggers to auto-register. But this will do for now.
          */
+
         m.add(new LocationLogger(this));
         m.add(new PluggedInLogger(this));
         m.add(new ScreenOnLogger(this));
+        /*
         m.add(new StepLogger(this));
         m.add(new ActivityLogger(this));
         m.add(new HeartLogger(this));
-
+        */
 
 
     }

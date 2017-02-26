@@ -7,7 +7,6 @@ import java.util.List;
 
 
 import com.facebook.react.ReactPackage;
-import com.facebook.react.ReactActivity;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -30,7 +29,7 @@ public class AppPackage implements ReactPackage {
             ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
 
-        modules.add(new LoggerModule(reactContext));
+        modules.add(new LoggingModule(reactContext));
 
         return modules;
     }

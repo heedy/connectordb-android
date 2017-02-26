@@ -1,4 +1,4 @@
-package com.connectordb_android.logger;
+package com.connectordb_android.loggers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -23,8 +23,9 @@ public class ScreenOnLogger extends BaseLogger {
 
 
     public ScreenOnLogger(Context c) {
-        super("screenon","{\"type\":\"boolean\"}","Screen On","True when the device screen is on",
-                "boolean","",c);
+        super("screenon","{\"type\":\"boolean\"}","Screen On","Logs when the device screen is turned on and off",
+                "boolean","material:smartphone",
+                "Defaults",true,c);
     }
 
     @Override

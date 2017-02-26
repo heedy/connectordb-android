@@ -4,9 +4,9 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.connectordb_android.logger.BaseLogger;
-import com.connectordb_android.logger.DatapointCache;
-import com.connectordb_android.logger.LoggingManager;
+import com.connectordb_android.loggers.BaseLogger;
+import com.connectordb_android.loggers.DatapointCache;
+import com.connectordb_android.loggers.LoggingManager;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
@@ -18,17 +18,17 @@ import com.facebook.react.bridge.WritableMap;
 
 import java.util.Iterator;
 
-public class LoggerModule extends ReactContextBaseJavaModule {
-    private static String TAG = "LoggerModule";
+public class LoggingModule extends ReactContextBaseJavaModule {
+    private static String TAG = "LoggingModule";
     private Context context;
-    public LoggerModule(ReactApplicationContext reactContext) {
+    public LoggingModule(ReactApplicationContext reactContext) {
         super(reactContext);
         context = reactContext;
     }
 
     @Override
     public String getName() {
-        return "Logger";
+        return "ConnectorDBLogger";
     }
 
     /**

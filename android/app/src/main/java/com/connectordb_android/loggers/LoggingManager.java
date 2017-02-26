@@ -1,4 +1,4 @@
-package com.connectordb_android.logger;
+package com.connectordb_android.loggers;
 
 import java.util.LinkedList;
 import java.util.ListIterator;

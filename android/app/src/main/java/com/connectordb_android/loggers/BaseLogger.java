@@ -1,16 +1,10 @@
-package com.connectordb_android.logger;
+package com.connectordb_android.loggers;
+
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import java.util.ArrayList;
-
-/**
- * BaseLogger is the core class used for all logging streams. It handles the common operations,
- * such as writing datapoints to the cache and logging. In order to extend BaseLogger, you need
- * to have a close function, which will stop any gathering you are doing.
- */
 public abstract class BaseLogger {
     protected Context context;
 
@@ -22,20 +16,21 @@ public abstract class BaseLogger {
     public String datatype;
     public String schema;
     public String icon;
+    public String category; // The category is for allowing different types of plugins
 
     /**
      * Sets up the BaseLogger - once this is set up, it is all you need to manage logging to ConnectorDB.
      * to see examples, look at one of the built-in loggers.
      *
-     * @param name is a name to use when logging to the debug log
-     * @param schema is a stringified version of the JSONSchema to use for the stream
-     * @param nickname - the nickname to give the stream
+     * @param name        is a name to use when logging to the debug log
+     * @param schema      is a stringified version of the JSONSchema to use for the stream
+     * @param nickname    - the nickname to give the stream
      * @param description - a string describing what the stream does
-     * @param datatype - optional conectordb datatype
-     * @param icon is the ison to use. Optional.
-     * @param c is the context. Because we need to pass around the context to do anything.
+     * @param datatype    - optional conectordb datatype
+     * @param icon        is the ison to use. Optional.
+     * @param c           is the context. Because we need to pass around the context to do anything.
      */
-    BaseLogger(String name, String schema, String nickname, String description, String datatype, String icon, Context c) {
+    BaseLogger(String name, String schema, String nickname, String description, String datatype, String icon, String category, boolean defaultEnabled, Context c) {
         this.context = c;
         this.name = name;
         this.schema = schema;
@@ -44,23 +39,32 @@ public abstract class BaseLogger {
         this.datatype = datatype;
 
         // Register the stream if it DNE
-        DatapointCache.get(c).ensureStream(name,schema,nickname,description,datatype,icon);
+        DatapointCache.get(c).ensureStream(name, schema, nickname, description, datatype, icon);
+
+        // If the stream is enabled by default, set the enabled state to true
+        if (defaultEnabled) {
+            if (kvGet("enabled").isEmpty()) {
+                kvSet("enabled","true");
+            }
+        }
     }
+
 
     /**
      * init is called after the constructor, which finishes setup
      */
     public void init() {
-        // Get the logger's status - and set it to enabled (true) if such a status does not exist
-        if (kvGet("enabled").equals("false")) {
-            enabled(false);
-        } else {
+        // Get the logger's status - and set it to enabled (false) if such a status does not exist
+        if (kvGet("enabled").equals("true")) {
             enabled(true);
+        } else {
+            enabled(false);
         }
     }
 
     /**
      * Returns the current timestamp. Can be directly used as the timestamp for insert
+     *
      * @return The current unix time in milliseconds
      */
     protected long timestamp() {
@@ -69,6 +73,7 @@ public abstract class BaseLogger {
 
     /**
      * insert adds the given datapoint to the cache, ready to be synced with ConnectorDB.
+     *
      * @param timestamp the unix timestamp in milliseconds. You can use BaseLogger.timestamp
      *                  to get the current timestamp
      * @param datapoint string of the datapoint that conforms to the stream's json schema.
@@ -76,33 +81,27 @@ public abstract class BaseLogger {
      *                  assumed that the datapoint is correct.
      */
     protected void insert(long timestamp, String datapoint) {
-        insert_db(timestamp,datapoint,null);
+        insert_db(timestamp, datapoint, null);
     }
 
     /**
      * insert_db inserts with an optional database argument
-     *
      */
     protected void insert_db(long timestamp, String datapoint, SQLiteDatabase db) {
-        DatapointCache.get(context).insert(name,timestamp,datapoint,db);
-    }
-
-    /**
-     * getDB gets a SQLite database for use in transactions
-     */
-    protected SQLiteDatabase getDB() {
-        return DatapointCache.get(context).getDatabase();
+        DatapointCache.get(context).insert(name, timestamp, datapoint, db);
     }
 
     // writes a log debug message
     protected void log(String s) {
-        Log.d(this.name,s);
+        Log.d(this.name, s);
     }
+
     protected void warn(String s) {
-        Log.w(this.name,s);
+        Log.w(this.name, s);
     }
+
     protected void error(String s) {
-        Log.e(this.name,s);
+        Log.e(this.name, s);
     }
 
     /**
@@ -142,7 +141,6 @@ public abstract class BaseLogger {
      * @param value Whether this logger is enabled
      */
     protected abstract void enabled(boolean value);
-
 
     // Shuts down all logging. You must implement this.
     public abstract void close();

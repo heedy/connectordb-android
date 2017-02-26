@@ -1,4 +1,4 @@
-package com.connectordb_android.logger;
+package com.connectordb_android.loggers;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -81,12 +81,7 @@ public class DatapointCache extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO kv VALUES ('devicename','');");
         db.execSQL("INSERT INTO kv VALUES ('__apikey','');");
 
-        // The default synchronization period is 20 minutes. Ideally this would be configurable by the user,
-        // Unfortunately, at the moment, The Google Fit logger only obtains up to 1000 datapoints per sync,
-        // which means that if you don't sync frequently enough, you could use data. This is a TODO, so
-        // once that is fixed, the sync time can be changed to the user's liking.
-        // Even then, data in google fit isn't kept forever - google keeps it for a couple months, so
-        // stopping sync completely, and then reenabling several months later might not save all data.
+        // The default synchronization period is 20 minutes, but sync is disabled
         db.execSQL("INSERT INTO kv VALUES ('syncperiod','1200');");
         db.execSQL("INSERT INTO kv VALUES ('syncenabled','0');"); // Sync is disabled by default
     }
@@ -181,7 +176,7 @@ public class DatapointCache extends SQLiteOpenHelper {
     }
 
     /**
-     * insert the given datapoint into the cache. When isnerting datapoints, make sure to run
+     * insert the given datapoint into the cache. When inserting datapoints, make sure to run
      * ensureStream first, to register the stream from which the datapoints come. Otherwise DatapointCache
      * won't recognize the points.
      * @param stream
@@ -279,8 +274,11 @@ public class DatapointCache extends SQLiteOpenHelper {
 
 
     /*
-    Certain loggers might want to perform a task before sync. See the google fit loggers for an example.
-    In these, the actual logging is done by android, and the logger needs to get the data before sync.
+    Certain loggers might want to perform a task before sync.
+    For example, in certain cases, data is logged in the background,
+    by android itself to conserve battery. Or the plugin gathers data
+    from another android app, which stores it. In this case, these plugins
+    will be called to perform their task before a sync is completed.
      */
     public interface PreSyncer {
         public void preSync();

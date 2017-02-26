@@ -1,4 +1,4 @@
-package com.connectordb_android.logger;
+package com.connectordb_android.loggers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,8 +42,9 @@ public class PluggedInLogger extends BaseLogger {
 
 
     public PluggedInLogger(Context c) {
-        super("pluggedin","{\"type\":\"boolean\"}","Plugged In", "True when the device is currently plugged in",
-                "boolean","",c);
+        super("pluggedin","{\"type\":\"boolean\"}","Plugged In", "Logs when the device is plugged in",
+                "boolean","material:power",
+                "Defaults",true,c);
     }
 
     @Override

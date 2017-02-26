@@ -1,4 +1,4 @@
-package com.connectordb_android.logger;
+package com.connectordb_android.loggers;
 
 import android.app.Activity;
 import android.content.Context;
@@ -78,15 +78,21 @@ public class GoogleApiSingleton implements
      */
     private synchronized void startApiConnection(Context c) {
         apiResolving = true;
+
+
         apiClient = new GoogleApiClient.Builder(c)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
+
+                // Add the google APIs you want to use HERE, and a comment specifying which logger uses them
+                .addApi(LocationServices.API)                       // LocationLogger
                 .addApi(Fitness.RECORDING_API)
                 .addApi(Fitness.HISTORY_API)
                 .addScope(Fitness.SCOPE_ACTIVITY_READ)
                 .addScope(Fitness.SCOPE_BODY_READ)
                 .addScope(Fitness.SCOPE_LOCATION_READ).build();
+
+
         apiClient.connect();
         Log.i(TAG, "Connecting to Google APIs...");
     }
