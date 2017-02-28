@@ -183,8 +183,22 @@ export function* deviceLogin(action) {
     yield put({ type: "LOAD_FINISHED", value: true });
 }
 
+import { setCred, setSync } from '../logging.js';
+
+export function* setCredentials(action) {
+    // We make the logging backend aware of our new credentials
+    setCred(action.value.url, action.value.user + "/" + action.value.devicename, action.value.dapikey);
+}
+
+export function* logOut(action) {
+    setSync(-1);
+    setCred("", "", "");
+}
+
 // Our watcher Saga: spawn a new incrementAsync task on each INCREMENT_ASYNC
 export default function* loginSaga() {
     yield takeEvery('LOGIN', appLogin);
     yield takeEvery('DEVICE_LOGIN', deviceLogin);
+    yield takeEvery('SET_CREDENTIALS', setCredentials);
+    yield takeEvery('LOGOUT', logOut);
 }

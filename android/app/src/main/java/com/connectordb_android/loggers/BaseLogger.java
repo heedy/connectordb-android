@@ -136,6 +136,14 @@ public abstract class BaseLogger {
     }
 
     /**
+     * Returns whether this plugin is enabled or not
+     * @return enabled?
+     */
+    public boolean isEnabled() {
+        return kvGet("enabled").equals("true");
+    }
+
+    /**
      * enabled allows to turn on/off specific loggers
      *
      * @param value Whether this logger is enabled

@@ -30,3 +30,11 @@ export function getLoggers() {
 export function sync() {
     Logger.sync();
 }
+
+export function setCred(server, devicename, apikey) {
+    Logger.setCred(server, devicename, apikey);
+}
+
+export function getSyncInfo() {
+    return Logger.getSyncInfo();
+}

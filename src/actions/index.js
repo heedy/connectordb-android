@@ -39,3 +39,24 @@ export function login() {
 export function logout() {
     return { type: "LOGOUT" };
 }
+
+
+import * as loggers from '../logging';
+import { ToastAndroid } from 'react-native';
+
+export function setLoggerEnabled(key, value) {
+    loggers.setEnabled(key, value);
+    return { type: "LOGGER_ENABLED", value: value, key: key };
+}
+
+export function sync() {
+    ToastAndroid.show("Syncing...", ToastAndroid.SHORT);
+    loggers.sync();
+    return { type: "SYNC" };
+}
+
+export function bgSync(enabled) {
+    // We temporarily use a constant time. TODO: make this a user-accessible function
+    loggers.setSync(enabled ? 20 * 60 : -1);
+    return { type: "SET_SYNC_ENABLED", value: enabled };
+}

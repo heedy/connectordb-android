@@ -17,7 +17,7 @@ import reducers from './reducers';
 import './components/inputs/registry';
 
 // Connect to the native portion of the app which logs data in background
-import { getLoggers } from './logging';
+import { getLoggers, getSyncInfo } from './logging';
 
 import Main from './Main';
 import Loading from './Loading';
@@ -81,3 +81,4 @@ store.dispatch({ type: "LOAD_STORAGE" });
 
 // Get the available background loggers
 getLoggers().then((result) => store.dispatch({ type: "SET_LOGGERS", value: result }));
+getSyncInfo().then((result) => store.dispatch({ type: "INIT_SYNC", value: result }))

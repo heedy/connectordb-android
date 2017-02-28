@@ -14,15 +14,11 @@ const Render = ({state, actions}) => (
             <Text style={styles.p}>
                 Basic Options
             </Text>
-            <View style={{ flexDirection: "row", flex: 1, paddingTop: 10 }}>
-                <Switch style={{ marginBottom: 10 }} value={state.login.localnetwork} onValueChange={(s) => actions.setLogin({ localnetwork: s })} />
-                <Text style={{ paddingTop: 5, paddingLeft: 10 }}>Gather data in background</Text>
-            </View>
             <View style={{ flexDirection: "row", flex: 1, paddingTop: 10, paddingBottom: 10 }}>
-                <Switch style={{ marginBottom: 10 }} value={state.login.localnetwork} onValueChange={(s) => actions.setLogin({ localnetwork: s })} />
+                <Switch style={{ marginBottom: 10 }} value={state.settings.sync.enabled} onValueChange={(s) => actions.bgSync(s)} />
                 <Text style={{ paddingTop: 5, paddingLeft: 10 }}>Sync to ConnectorDB in background</Text>
             </View>
-            <Button onPress={() => console.log("Sync Pressed!")} title="Sync Now" accessibilityLabel="Write cached data to ConnectorDB server" />
+            <Button onPress={actions.sync} title="Sync Now" accessibilityLabel="Write cached data to ConnectorDB server" />
         </View>
         <View style={styles.card}>
             <Text style={styles.p}>
@@ -32,7 +28,7 @@ const Render = ({state, actions}) => (
                 let s = state.settings.loggers[key];
                 return (
                     <View key={key} style={{ flexDirection: "row", flex: 1, paddingTop: 10, paddingBottom: 10 }}>
-                        <Switch style={{ marginBottom: 10 }} value={state.login.localnetwork} onValueChange={(s) => actions.setLogin({ localnetwork: s })} />
+                        <Switch style={{ marginBottom: 10 }} value={s.enabled} onValueChange={(v) => actions.setLoggerEnabled(key, v)} />
                         <View>
                             <Text style={{ paddingTop: 5, paddingLeft: 10, paddingRight: 10, color: '#333333' }}>{s.nickname}</Text>
                             <Text style={{ paddingTop: 5, paddingLeft: 10, paddingRight: 40 }}>{s.description}</Text>

@@ -262,6 +262,22 @@ public class DatapointCache extends SQLiteOpenHelper {
         startSyncWait();
     }
 
+    /**
+     *
+     * @return Whether or not background synchronization is currently enabled
+     */
+    public synchronized boolean getSyncEnabled() {
+        return this.getKey("syncenabled").equals("1");
+    }
+
+    /**
+     *
+     * @return The time is seconds between sync attempts if sync is enabled
+     */
+    public long getSyncTime() {
+        return Long.parseLong(this.getKey("syncperiod"));
+    }
+
     public void bgSync() {
         new AsyncTask<Void, Void, Void>() {
             @Override

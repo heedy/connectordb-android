@@ -48,6 +48,7 @@ public class LoggingModule extends ReactContextBaseJavaModule {
             stream.putString("schema",l.schema);
             stream.putString("icon",l.icon);
             stream.putString("datatype",l.datatype);
+            stream.putBoolean("enabled",l.isEnabled());
 
             settings.putMap(l.name,stream);
         }
@@ -84,6 +85,17 @@ public class LoggingModule extends ReactContextBaseJavaModule {
             DatapointCache.get(context).enableTimedSync(time);
         }
 
+    }
+
+    /**
+     * Returns the current sync info
+     */
+    @ReactMethod
+    public void getSyncInfo(Promise promise) {
+        WritableMap info = Arguments.createMap();
+        info.putBoolean("enabled",DatapointCache.get(context).getSyncEnabled());
+        info.putInt("time",(int)DatapointCache.get(context).getSyncTime());
+        promise.resolve(info);
     }
 
     /**
