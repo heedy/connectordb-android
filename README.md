@@ -2,6 +2,8 @@
 
 <a href='https://play.google.com/store/apps/details?id=com.connectordb_android&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width="250" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
 
+If feeling adventurous, you can also try the [Testing Releases](https://play.google.com/apps/testing/com.connectordb_android)
+
 This is the ConnectorDB android app. While our usage of React Native enables IOS to use a similar UI, the data-gathering extensively uses native android APIs, so it would need to be rewritten specifically for IOS.
 
 ## Data Gathering
@@ -68,7 +70,7 @@ You'll need to use `com.connectordb_android` for the package name, and set up yo
 
 ## Adding New Loggers
 
-The app was made with extensibility in mind. `android/app/src/main/java/com/connectordb_android/logger/` contains all of the data-gathering code. To create a new logger:
+The app was made with extensibility in mind. `android/app/src/main/java/com/connectordb_android/loggers/` contains all of the data-gathering code. To create a new logger:
 - Extend `BaseLogger` or `GoogleFitLogger` if using google fit data. Use the existing loggers as examples on how this is done
 - Add your logger in `LoggerService.java`, so it is started automatically
 - Add any new permissions you might need in `AndroidManifest.xml`, and add any google APIs you need in `GoogleApiSingleton.java`

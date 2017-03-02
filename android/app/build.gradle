@@ -87,12 +87,23 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
 
+    signingConfigs {
+        release {
+            if (project.hasProperty('ANDROID_RELEASE_STORE_FILE')) {
+                storeFile file(ANDROID_RELEASE_STORE_FILE)
+                storePassword ANDROID_RELEASE_STORE_PASSWORD
+                keyAlias ANDROID_RELEASE_KEY_ALIAS
+                keyPassword ANDROID_RELEASE_KEY_PASSWORD
+            }
+        }
+    }
+
     defaultConfig {
         applicationId "com.connectordb_android"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 4
+        versionName "0.2.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -109,6 +120,7 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release

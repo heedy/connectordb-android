@@ -4,7 +4,6 @@ import { Provider, connect } from 'react-redux';
 
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 import createSagaMiddleware from 'redux-saga'
-import createLogger from 'redux-logger';
 
 // Imports the sagas (asynchronous actions) that run on certain things.
 // All network requests and database updates are performed as sagas.
@@ -24,9 +23,12 @@ import Loading from './Loading';
 import Login from './Login';
 
 const sagaMiddleware = createSagaMiddleware();
+
+/*import createLogger from 'redux-logger';
 const loggerMiddleware = createLogger({
     colors: {},
 });
+*/
 
 const store = createStore(
     combineReducers(reducers),
@@ -68,12 +70,12 @@ store.dispatch({
         user: "test",
         apikey: "2911e03a-e0ef-4e8c-6515-dd3bfdb24174"
     }
-});*/
+});
 store.dispatch({
     type: "SET_LOGIN",
     value: { server: "http://10.0.2.2:3124" }
 });
-
+*/
 // Loads all saved values from storage. The loading screen will be hidden when values 
 // are all loaded.
 store.dispatch({ type: "LOAD_STORAGE" });
