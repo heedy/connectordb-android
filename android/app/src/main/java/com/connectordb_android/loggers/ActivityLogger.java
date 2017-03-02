@@ -1,4 +1,4 @@
-package com.connectordb_android.logger;
+package com.connectordb_android.loggers;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,7 +13,7 @@ public class ActivityLogger extends GoogleFitLogger {
 
     ActivityLogger(Context c) {
         super("activity","{\"type\":\"string\"}","Activity Type","The current activity that phone is detecting",
-                "string.person.activity","",c,DataType.TYPE_ACTIVITY_SAMPLE);
+                "string.person.activity","material:motorcycle",true,c,DataType.TYPE_ACTIVITY_SAMPLE);
     }
 
     @Override

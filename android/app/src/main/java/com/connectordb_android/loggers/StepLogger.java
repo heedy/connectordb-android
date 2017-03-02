@@ -1,4 +1,4 @@
-package com.connectordb_android.logger;
+package com.connectordb_android.loggers;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,11 +9,10 @@ import com.google.android.gms.fitness.data.Field;
 
 import java.util.concurrent.TimeUnit;
 
-public class HeartLogger extends GoogleFitLogger {
-
-    HeartLogger(Context c) {
-        super("heartrate","{\"type\":\"number\"}",
-                "Heart Rate","Heart rate logged by google-fit-connected devices","heartrate.bpm","",c,DataType.TYPE_HEART_RATE_BPM);
+public class StepLogger extends GoogleFitLogger {
+    StepLogger(Context c) {
+        super("steps","{\"type\":\"number\"}","Step Count","Number of steps taken",
+                "number.stepcount","material:directions_walk",true,c,DataType.TYPE_STEP_COUNT_DELTA);
     }
 
     @Override
@@ -22,7 +21,7 @@ public class HeartLogger extends GoogleFitLogger {
         //so I did it the only way I could figure out: brute force. TL;DR: There is probably a better way of reading datapoints...
         String data = "";
         for (Field field : dp.getDataType().getFields()) {
-            if (field.getName().equals("heart_rate")) {
+            if (field.getName().equals("steps")) {
                 data += dp.getValue(field);
             }
         }

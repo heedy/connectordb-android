@@ -30,7 +30,7 @@ const loggerMiddleware = createLogger({
 
 const store = createStore(
     combineReducers(reducers),
-    applyMiddleware(sagaMiddleware, loggerMiddleware)
+    applyMiddleware(sagaMiddleware) //, loggerMiddleware)
 );
 
 // Start listening to the relevant sagas
@@ -39,7 +39,7 @@ sagaMiddleware.run(sagas);
 // This chooses whether to show the loading, login, or main screen of the app.
 const ScreenChooser = connect(
     (state) => ({ state: state })
-)(({state}) => {
+)(({ state }) => {
     // main.loaded is set to true when the app is finished loading data from
     // the app storage
     if (!state.main.loaded) return (<Loading />);

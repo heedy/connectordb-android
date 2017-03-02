@@ -1,9 +1,10 @@
-package com.connectordb_android.logger;
+package com.connectordb_android.loggers;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -31,8 +32,9 @@ import java.util.concurrent.TimeUnit;
  * All we need to do is read the gathered data once in a while, and put it into our cache, so that it will be synced
  * to ConnectorDB.
  */
-public abstract class GoogleFitLogger extends BaseLogger implements DatapointCache.PreSyncer, GoogleApiSingleton.ApiCallback, ResultCallback<Status> {
-
+public abstract class GoogleFitLogger extends BaseLogger implements GoogleApiSingleton.ApiCallback, ResultCallback<Status> {
+    public static final String TAG = "Google Fit Logging";
+    private static long WAITTIME = 5*60*1000;
     /**
      * handleDatapoint is called during synchronization with the google fit API. It is your job to insert each datapoint into
      * the cache if you want it there. Datapoints are assumed to be ordered
@@ -43,17 +45,53 @@ public abstract class GoogleFitLogger extends BaseLogger implements DatapointCac
     public abstract void handleDatapoint(SQLiteDatabase db, DataPoint dp);
 
 
+
     protected GoogleApiClient googleApiClient;
     protected DataType dataType;
     protected boolean logenabled = false;
 
 
+    final Handler handler = new Handler();
+    Runnable syncer = new Runnable() {
+        public void run() {
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    GoogleFitLogger.this.getdata();
+                    GoogleFitLogger.this.startSyncWait();
+                    return null;
+                }
+            }.execute();
+        }
+    };
+
+    public void startSyncWait() {
+        v("Setting next sync in "+ WAITTIME);
+        handler.postDelayed(syncer,WAITTIME);
+    }
+
+    public void disableTimedSync() {
+        v("Disabling syncer");
+        handler.removeCallbacks(syncer);
+
+    }
+
+    public void bgSync() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                GoogleFitLogger.this.getdata();
+                return null;
+            }
+        }.execute();
+    }
+
+
     /**
-     * presync takes the data that the fit API gathered for us, and moves it into our data cache,
-     * so that it will be inserted into ConnectorDB on sync. This conforms to the CatapointCache.PreSyncer
-     * interface, and is run right before connectordb is synced each time.
+     * getdata takes the data that the fit API gathered for us, and moves it into our data cache,
+     * so that it will be inserted into ConnectorDB on sync.
      */
-    public synchronized void preSync() {
+    public synchronized void getdata() {
         if (googleApiClient==null || !googleApiClient.isConnected()) {
             warn("Google API is not connected - can't sync fit");
             return;
@@ -73,8 +111,8 @@ public abstract class GoogleFitLogger extends BaseLogger implements DatapointCac
         log("FitSync: Start Time: "+ Long.toString(startTime));
 
         DataReadRequest readRequest = new DataReadRequest.Builder()
-                .read(dataType)
                 .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+                .read(dataType)
                 .setLimit(1000)    // Docs say this is the maximum... anything higher times out
                 .build();
         DataReadResult dataReadResult =
@@ -91,10 +129,11 @@ public abstract class GoogleFitLogger extends BaseLogger implements DatapointCac
                 // there might be data that we didn't get! We therefore run a backtrack until we get less than
                 // 1000 datapoints.
                 // https://developers.google.com/fit/android/history#insert_data
-                log("Up to datapoint limit! There might be missing datapoints! TODO: FIX THIS");
+                warn("Up to datapoint limit! There might be missing datapoints! TODO: FIX THIS");
                 // TODO: perform backtrack to get all data stored in google fit
 
             }
+            v("Have "+Integer.toString(dplist.size()) + " datapoints");
 
 
             db.beginTransactionNonExclusive();
@@ -127,15 +166,15 @@ public abstract class GoogleFitLogger extends BaseLogger implements DatapointCac
      * @param dataType the fitness DataType to gather. Make sure that the correct scope for the datatypes
      *                 is enabled in GoogleApiSingleton, otherwise there will be a permissions error
      */
-    GoogleFitLogger(String streamName, String jsonSchema, String nickname, String description, String datatype, String icon,Context c,DataType dataType) {
-        super(streamName,jsonSchema,nickname,description,datatype,icon,c);
+    GoogleFitLogger(String streamName, String jsonSchema, String nickname, String description, String datatype, String icon, Boolean defaultEnabled, Context c,DataType dataType) {
+        super(streamName,jsonSchema,nickname,description,datatype,icon,"Google Fit", defaultEnabled,c);
         this.dataType = dataType;
 
         log("Connecting to Google Play services");
         GoogleApiSingleton.get().getGoogleApi(c, this);
 
         // Add the presync
-        DatapointCache.get(c).addPreSync(this);
+        // DatapointCache.get(c).addPreSync(this);
 
     }
 
@@ -193,6 +232,13 @@ public abstract class GoogleFitLogger extends BaseLogger implements DatapointCac
 
     @Override
     protected void enabled(boolean value) {
+        if (value && !logenabled) {
+            startSyncWait();
+        } else if (!value && logenabled) {
+            disableTimedSync();
+        }
+
+
         logenabled = value;
         // If not -1, enable gather
         gatherEnabled();
@@ -205,6 +251,8 @@ public abstract class GoogleFitLogger extends BaseLogger implements DatapointCac
      */
     @Override
     public void close() {
+        if (logenabled) disableTimedSync();
+
         log("Closing fit logger");
     }
 

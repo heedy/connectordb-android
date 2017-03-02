@@ -31,7 +31,6 @@ function getFromDict(dict, datatype, schema) {
     }
     // If we got here, the datatype was not found. Hopefully, we can still salvage it
     // by checking the schema
-    console.log(schema);
     if (schema.type !== undefined && dict["type:" + schema.type] !== undefined) {
         return dict["type:" + schema.type];
     }

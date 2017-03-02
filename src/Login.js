@@ -9,7 +9,7 @@ import { ScrollView, View, Image, Text, TextInput, Switch, Button } from 'react-
 import styles from './styles';
 
 
-const Main = ({state, actions}) => (
+const Main = ({ state, actions }) => (
     <ScrollView style={styles.loginView} >
         <Image style={{
             width: 100,
@@ -46,7 +46,15 @@ const Main = ({state, actions}) => (
                     color='#005c9e' />
             </View>
         </View>
-        <View style={styles.card}>
+
+        <View style={{ height: 30 }}>
+        </View>
+
+    </ScrollView>
+);
+
+/*
+<!-- <View style={styles.card}>
             <Text style={styles.p}>
                 Advanced Options
             </Text>
@@ -58,12 +66,8 @@ const Main = ({state, actions}) => (
                 <Switch style={{ marginBottom: 10 }} value={state.login.localnetwork} onValueChange={(s) => actions.setLogin({ localnetwork: s })} />
                 <Text style={{ paddingTop: 5, paddingLeft: 10 }}>Only sync when on this wifi network</Text>
             </View>
-        </View>
-        <View style={{ height: 30 }}>
-        </View>
-
-    </ScrollView>
-);
+        </View> -->
+*/
 
 
 export default connect(

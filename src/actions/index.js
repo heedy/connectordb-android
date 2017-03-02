@@ -57,6 +57,5 @@ export function sync() {
 
 export function bgSync(enabled) {
     // We temporarily use a constant time. TODO: make this a user-accessible function
-    loggers.setSync(enabled ? 20 * 60 : -1);
     return { type: "SET_SYNC_ENABLED", value: enabled };
 }

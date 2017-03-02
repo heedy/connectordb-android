@@ -91,15 +91,23 @@ public abstract class BaseLogger {
         DatapointCache.get(context).insert(name, timestamp, datapoint, db);
     }
 
+    /**
+     * getDB gets a SQLite database for use in transactions
+     */
+    protected SQLiteDatabase getDB() {
+        return DatapointCache.get(context).getDatabase();
+    }
+
     // writes a log debug message
+    protected void v(String s) {
+        Log.v(this.name, s);
+    }
     protected void log(String s) {
         Log.d(this.name, s);
     }
-
     protected void warn(String s) {
         Log.w(this.name, s);
     }
-
     protected void error(String s) {
         Log.e(this.name, s);
     }

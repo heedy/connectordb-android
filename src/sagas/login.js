@@ -181,6 +181,9 @@ export function* deviceLogin(action) {
 
     // ...and disable the loading screen.
     yield put({ type: "LOAD_FINISHED", value: true });
+
+    // Finally, turn on autosync
+
 }
 
 import { setCred, setSync } from '../logging.js';
@@ -195,10 +198,15 @@ export function* logOut(action) {
     setCred("", "", "");
 }
 
+export function* setupSync(action) {
+    setSync(action.value ? 20 * 60 : -1);
+}
+
 // Our watcher Saga: spawn a new incrementAsync task on each INCREMENT_ASYNC
 export default function* loginSaga() {
     yield takeEvery('LOGIN', appLogin);
     yield takeEvery('DEVICE_LOGIN', deviceLogin);
     yield takeEvery('SET_CREDENTIALS', setCredentials);
     yield takeEvery('LOGOUT', logOut);
+    yield takeEvery('SET_SYNC_ENABLED', setupSync);
 }
