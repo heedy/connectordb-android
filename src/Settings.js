@@ -5,10 +5,10 @@ import { bindActionCreators } from 'redux';
 import * as Actions from './actions';
 import styles from './styles';
 
-import { ScrollView, View, Text, TouchableOpacity, Button, Switch } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, Button, Switch, Linking } from 'react-native';
 
 
-const Render = ({state, actions}) => (
+const Render = ({ state, actions }) => (
     <ScrollView style={styles.tabView}>
         <View style={styles.card}>
             <Text style={styles.p}>
@@ -41,6 +41,13 @@ const Render = ({state, actions}) => (
             <Text style={styles.p}>
                 Advanced
             </Text>
+            <View style={{ marginTop: 20, paddingRight: 15, paddingBottom: 20 }}>
+                <TouchableOpacity onPress={() => Linking.openURL("https://github.com/connectordb/connectordb-android/issues")}>
+                    <Text style={{ color: '#005c9e', textAlign: "center" }}>
+                        Request Feature/Report Bug
+                        </Text>
+                </TouchableOpacity>
+            </View>
             <Button onPress={actions.logout} title="Log Out" accessibilityLabel="Log Out of ConnectorDB" />
         </View>
     </ScrollView>

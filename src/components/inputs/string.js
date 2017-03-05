@@ -10,9 +10,9 @@ class StringInserter extends Component {
         super(props);
         this.state = { text: '' };
     }
-    insertData(txt) {
-        this.setState({ text: "" });
+    insertData() {
         this.props.insert(this.state.text);
+        this.setState({ text: "" });
     }
 
     render() {
@@ -24,7 +24,7 @@ class StringInserter extends Component {
                     onChangeText={(text) => this.setState({ text })}
                     value={this.state.text}
                 />
-                <TouchableOpacity style={{ marginTop: 15 }} onPress={(txt) => this.insertData(txt)}>
+                <TouchableOpacity style={{ marginTop: 15 }} onPress={() => this.insertData()}>
                     <Text style={{ color: '#005c9e' }}>
                         INSERT
                     </Text>

@@ -10,9 +10,9 @@ import mapInputs from './components/inputs';
 import { ScrollView, View, Text, RefreshControl, Linking, Button, TouchableOpacity } from 'react-native';
 
 
-const ratingURL = (state) => (state.main.url + "/" + state.main.user + "/user#create/rating.stars?apikey=" + state.main.apikey);
+const ratingURL = (state) => (state.main.url + "/" + state.main.user + "/user#create/rating.stars");
 
-const Render = ({state, actions}) => (
+const Render = ({ state, actions }) => (
     <ScrollView style={styles.tabView} contentContainerStyle={styles.tabViewRefreshContainer}
         refreshControl={
             <RefreshControl refreshing={state.inputs.refreshing} onRefresh={actions.refreshInputs} />

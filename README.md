@@ -73,7 +73,11 @@ You'll need to use `com.connectordb_android` for the package name, and set up yo
 The app was made with extensibility in mind. `android/app/src/main/java/com/connectordb_android/loggers/` contains all of the data-gathering code. To create a new logger:
 - Extend `BaseLogger` or `GoogleFitLogger` if using google fit data. Use the existing loggers as examples on how this is done
 - Add your logger in `LoggerService.java`, so it is started automatically
-- Add any new permissions you might need in `AndroidManifest.xml`, and add any google APIs you need in `GoogleApiSingleton.java`
+- Set up any permissions you might need for your logger
+    - `android/app/src/main/AndroidManifest.xml`: Any permissions you use need to be added here
+    - `src/permissions.js`: If your logger uses [dangerous permissions](https://developer.android.com/guide/topics/permissions/requesting.html#normal-dangerous), you need to add the permission in this file too
+    - `android/app/src/main/java/com/connectordb_android/loggers/GoogleApiSingleton.java`: If you use any google APIs, you will need to add the API to the API singleton
+    
 - Submit a pull request! We'd love to include a variety of loggers (with only some on by default)
 
 ## Improving the UI

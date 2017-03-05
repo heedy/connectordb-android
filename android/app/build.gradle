@@ -85,7 +85,7 @@ def enableProguardInReleaseBuilds = false
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion '25.0.0'
 
     signingConfigs {
         release {
@@ -102,7 +102,7 @@ android {
         applicationId "com.connectordb_android"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 4
+        versionCode 5
         versionName "0.2.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"

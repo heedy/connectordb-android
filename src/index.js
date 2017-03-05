@@ -15,6 +15,8 @@ import reducers from './reducers';
 // Set up all the input types
 import './components/inputs/registry';
 
+import getPermissions from './permissions';
+
 // Connect to the native portion of the app which logs data in background
 import { getLoggers, getSyncInfo } from './logging';
 
@@ -61,6 +63,9 @@ const App = () => {
 }
 
 export default App
+
+// Ask for android permissions if we need them
+getPermissions();
 
 // Code for Testing: gets past the login screen.
 /*

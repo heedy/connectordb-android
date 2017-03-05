@@ -4,3 +4,4 @@
 import './bool';
 import './string';
 import './stars';
+import './number';

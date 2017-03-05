@@ -5,8 +5,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         backgroundColor: 'rgba(0,0,0,0.01)',
-        marginTop: 10,
-        marginBottom: 20
+        paddingBottom: 20
     },
     loginView: {
         flex: 1,
