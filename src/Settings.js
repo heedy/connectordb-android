@@ -41,7 +41,7 @@ const Render = ({ state, actions }) => (
             <Text style={styles.p}>
                 Advanced
             </Text>
-            <View style={{ marginTop: 20, paddingRight: 15, paddingBottom: 20 }}>
+            <View style={{ marginTop: 20, paddingRight: 15, paddingBottom: 20, marginBottom: 20 }}>
                 <TouchableOpacity onPress={() => Linking.openURL("https://github.com/connectordb/connectordb-android/issues")}>
                     <Text style={{ color: '#005c9e', textAlign: "center" }}>
                         Request Feature/Report Bug
@@ -50,10 +50,23 @@ const Render = ({ state, actions }) => (
             </View>
             <Button onPress={actions.logout} title="Log Out" accessibilityLabel="Log Out of ConnectorDB" />
         </View>
-    </ScrollView>
+        <View style={{ marginBottom: 20 }}><Text></Text></View>
+    </ScrollView >
 );
 
 export default connect(
     (state) => ({ state: state }),
     (dispatch) => ({ actions: bindActionCreators(Actions, dispatch) })
 )(Render);
+
+/* Should allow server updating at some point
+ <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+                <TextInput style={{ flex: 1 }} placeholder="Server" autoCorrect={false} keyboardType="email-address" value={state.login.server}
+                    onChangeText={(s) => actions.setLogin({ server: s })} />
+                <TouchableOpacity onPress={() => Linking.openURL("https://github.com/connectordb/connectordb-android/issues")}>
+                    <Text style={{ marginBottom: 20, paddingRight: 10 }}>
+                        Update URL
+                    </Text>
+                </TouchableOpacity>
+            </View>
+ */

@@ -60,6 +60,14 @@ If running on an external device, you'll need to use adb to forward the debug po
 adb reverse tcp:8081 tcp:8081
 ```
 
+#### Building Release
+
+Follow the instructions [here](https://facebook.github.io/react-native/docs/signed-apk-android.html) to set up signing key, and run:
+
+```
+cd android && ./gradlew assembleRelease
+```
+
 ### Logging Error
 
 Once you start running the app, you might come across a logging error right after it turns on. This is because the app expects to be able to connect to google's fitness apis (from which it gathers several metrics). You will need to create an OAuth API key for your app as seen here: https://developers.google.com/fit/android/get-api-key

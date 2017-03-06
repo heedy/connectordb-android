@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
         shadowColor: '#ccc',
         shadowOffset: { width: 2, height: 2, },
         shadowOpacity: 0.5,
-        shadowRadius: 3,
+        shadowRadius: 3
     },
     p: {
         textAlign: 'center',
