@@ -12,6 +12,8 @@
     <!-- ADD PERMISSIONS FOR LOGGING EXTENSIONS HERE -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>   <!-- LocationLogger -->
     <uses-permission android:name="android.permission.BODY_SENSORS" />  <!-- Google fit logging -->
+
+    <uses-permission android:name="com.urbandroid.sleep.READ" /> <!-- sleep data -->
     <!-- END LOGGING PERMISSIONS -->
 
     <uses-sdk

@@ -39,6 +39,7 @@ public class LoggerService extends Service {
         m.add(new StepLogger(this));
         m.add(new ActivityLogger(this));
         m.add(new HeartLogger(this));
+        m.add(new SleepAsAndroid(this));
 
 
 
