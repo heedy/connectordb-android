@@ -394,6 +394,13 @@ public class DatapointCache extends SQLiteOpenHelper {
                     } catch (NumberFormatException nfe) {
                     }
 
+                    // Now see if there exists a newer timestamp for the stream
+                    double streamtime = cdb.getMostRecentTimestamp(devicename + "/" + streamname);
+                    if (streamtime > oldtime) {
+                        Log.w(TAG,"Stream on server has newer timestamps! Skipping until time!");
+                        oldtime = streamtime;
+                    }
+
                     StringBuilder totaldata = new StringBuilder();
                     totaldata.append("[");
                     for (int j = 0; j < dtacount; j++) {

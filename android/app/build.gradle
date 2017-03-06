@@ -146,11 +146,9 @@ dependencies {
     compile "com.facebook.react:react-native:+"  // From node_modules
 
     // These two are needed for connectordb library, which is not yet synced to maven
-    // They are the dependencies... Notice how ancient they are...
-    // These two are needed for connectordb library
-    compile 'com.squareup.okhttp3:okhttp:3.3.1'
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
     // http://mvnrepository.com/artifact/com.google.code.gson/gson
-    compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.0'
 
     // Add dependencies necessary for loggers HERE, as well as a comment specifying which logger uses them.
 

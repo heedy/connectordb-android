@@ -183,7 +183,7 @@ export function* deviceLogin(action) {
     yield put({ type: "LOAD_FINISHED", value: true });
 
     // Finally, turn on autosync
-
+    yield put({ type: "SET_SYNC_ENABLED", value: true });
 }
 
 import { setCred, setSync } from '../logging.js';
