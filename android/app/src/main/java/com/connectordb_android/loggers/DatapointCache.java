@@ -13,11 +13,9 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-
 import com.connectordb.client.ConnectorDB;
 import com.connectordb.client.RequestFailedException;
 import com.connectordb.client.Stream;
-
 
 /**
  * DatapointCache holds an SQLite database which manages all of the information needed to
@@ -30,16 +28,17 @@ import com.connectordb.client.Stream;
  * The DatapointCache also manages synchronization with ConnectorDB
  */
 public class DatapointCache extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
     public static final String TAG = "DatapointCache";
     public static final String DATABASE_NAME = "DatapointCache.db";
 
     //The class is used as a singleton in the application
     private static DatapointCache datapointCache;
+
     public static synchronized DatapointCache get(Context c) {
-        if (datapointCache==null) {
-            if (c==null) {
-                Log.e(TAG,"Context not supplied to DatapointCache!");
+        if (datapointCache == null) {
+            if (c == null) {
+                Log.e(TAG, "Context not supplied to DatapointCache!");
             }
             Log.v(TAG, "Initializing Datapoint Cache");
             datapointCache = new DatapointCache(c);
@@ -58,13 +57,14 @@ public class DatapointCache extends SQLiteOpenHelper {
         long syncenabled = 0;
         try {
             syncenabled = Long.parseLong(this.getKey("syncenabled"));
-        } catch(NumberFormatException nfe) {}
+        } catch (NumberFormatException nfe) {
+        }
 
         if (syncenabled > 0) {
             Log.i(TAG, "Sync is Enabled");
             this.startSyncWait();
         } else {
-            Log.i(TAG,"Sync is disabled");
+            Log.i(TAG, "Sync is disabled");
         }
 
     }
@@ -72,7 +72,8 @@ public class DatapointCache extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.v(TAG, "Creating new logger cache database");
-        db.execSQL("CREATE TABLE streams (streamname TEXT PRIMARY KEY, schema TEXT, nickname TEXT, description TEXT, datatype TEXT, icon TEXT);");
+        db.execSQL(
+                "CREATE TABLE streams (streamname TEXT PRIMARY KEY, schema TEXT, nickname TEXT, description TEXT, datatype TEXT, icon TEXT);");
         db.execSQL("CREATE TABLE cache (streamname TEXT, timestamp REAL, data TEXT);");
         db.execSQL("CREATE TABLE kv (key TEXT PRIMARY KEY, value TEXT);");
 
@@ -102,8 +103,8 @@ public class DatapointCache extends SQLiteOpenHelper {
      */
     public String getKey(String key) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("SELECT value FROM kv WHERE key=?;", new String[]{key});
-        if (res.getCount() ==0 ) {
+        Cursor res = db.rawQuery("SELECT value FROM kv WHERE key=?;", new String[] { key });
+        if (res.getCount() == 0) {
             return "";
         } else {
             res.moveToNext();
@@ -122,25 +123,25 @@ public class DatapointCache extends SQLiteOpenHelper {
      * @param value
      * @param db optional database to use (for setting in transactions)
      */
-    public void setKey(String key,String value, SQLiteDatabase db) {
-        if (db==null) db = this.getWritableDatabase();
+    public void setKey(String key, String value, SQLiteDatabase db) {
+        if (db == null)
+            db = this.getWritableDatabase();
         if (key.startsWith("__")) {
             Log.v(TAG, "SET " + key + " TO ********");
-        }else{
+        } else {
             Log.v(TAG, "SET " + key + " TO " + value);
         }
         ContentValues contentValues = new ContentValues();
         contentValues.put("key", key);
         contentValues.put("value", value);
-        db.replace("kv",null,contentValues);
+        db.replace("kv", null, contentValues);
     }
 
-    public void setCred(String server,String device, String apikey) {
-        this.setKey("devicename",device,null);
-        this.setKey("__apikey",apikey,null);
-        this.setKey("server",server,null);
+    public void setCred(String server, String device, String apikey) {
+        this.setKey("devicename", device, null);
+        this.setKey("__apikey", apikey, null);
+        this.setKey("server", server, null);
     }
-
 
     /**
      * ensureStream adds the stream to the DatapointCache. This will make the stream be created
@@ -153,15 +154,16 @@ public class DatapointCache extends SQLiteOpenHelper {
      * @param datatype connectorDB datatype for the stream
      * @param icon urlencoded icon to use for the stream
      */
-    public void ensureStream(String stream, String schema,String nickname, String description, String datatype, String icon) {
+    public void ensureStream(String stream, String schema, String nickname, String description, String datatype,
+            String icon) {
         Log.v(TAG, "Ensuring stream " + stream);
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("streamname", stream);
         contentValues.put("schema", schema);
-        contentValues.put("description",description);
-        contentValues.put("nickname",nickname);
+        contentValues.put("description", description);
+        contentValues.put("nickname", nickname);
         contentValues.put("datatype", datatype);
         contentValues.put("icon", icon);
         db.insertWithOnConflict("streams", null, contentValues, SQLiteDatabase.CONFLICT_IGNORE);
@@ -186,7 +188,8 @@ public class DatapointCache extends SQLiteOpenHelper {
      * @return whether insert was successful
      */
     public synchronized boolean insert(String stream, long timestamp, String data, SQLiteDatabase db) {
-        if (db==null) db = this.getWritableDatabase();
+        if (db == null)
+            db = this.getWritableDatabase();
         Log.v(TAG, "[s=" + stream + " t=" + Long.toString(timestamp) + " d=" + data + "]");
 
         ContentValues contentValues = new ContentValues();
@@ -196,8 +199,6 @@ public class DatapointCache extends SQLiteOpenHelper {
         db.insert("cache", null, contentValues);
         return true;
     }
-
-
 
     //Returns the number of cached datapoints
     public int size() {
@@ -217,8 +218,6 @@ public class DatapointCache extends SQLiteOpenHelper {
      * All functions from now on handle synchronization with ConnectorBD
      */
 
-
-
     final Handler handler = new Handler();
     Runnable syncer = new Runnable() {
         public void run() {
@@ -235,19 +234,18 @@ public class DatapointCache extends SQLiteOpenHelper {
 
     public void startSyncWait() {
 
-
         long waittime = Long.parseLong(this.getKey("syncperiod"));
 
         if (waittime > 0) {
-            Log.v(TAG,"Setting next sync in "+ waittime);
-            handler.postDelayed(syncer,waittime);
+            Log.v(TAG, "Setting next sync in " + waittime);
+            handler.postDelayed(syncer, waittime);
         }
     }
 
     public void disableTimedSync() {
         Log.v(TAG, "Disabling syncer");
         handler.removeCallbacks(syncer);
-        this.setKey("syncenabled", "0",null);
+        this.setKey("syncenabled", "0", null);
 
     }
 
@@ -257,8 +255,8 @@ public class DatapointCache extends SQLiteOpenHelper {
      */
     public synchronized void enableTimedSync(long time) {
         disableTimedSync();
-        this.setKey("syncenabled", "1",null);
-        this.setKey("syncperiod",Long.toString(time*1000),null);
+        this.setKey("syncenabled", "1", null);
+        this.setKey("syncperiod", Long.toString(time * 1000), null);
         startSyncWait();
     }
 
@@ -288,7 +286,6 @@ public class DatapointCache extends SQLiteOpenHelper {
         }.execute();
     }
 
-
     /*
     Certain loggers might want to perform a task before sync.
     For example, in certain cases, data is logged in the background,
@@ -299,32 +296,29 @@ public class DatapointCache extends SQLiteOpenHelper {
     public interface PreSyncer {
         public void preSync();
     }
+
     private static ArrayList<PreSyncer> presync = new ArrayList<PreSyncer>();
 
     public synchronized void addPreSync(PreSyncer p) {
-        Log.v(TAG,"Added Presyncer");
+        Log.v(TAG, "Added Presyncer");
         presync.add(p);
     }
 
-
-
     //Synchronizes the database with the server
     public synchronized boolean sync() {
-        Log.i(TAG,"Starting sync");
+        Log.i(TAG, "Starting sync");
 
-        Log.v(TAG,"Running Presync tasks");
+        Log.v(TAG, "Running Presync tasks");
         Iterator<PreSyncer> iter = presync.iterator();
         while (iter.hasNext()) {
             iter.next().preSync();
         }
 
-
         String server = this.getKey("server");
         String devicename = this.getKey("devicename");
         String apikey = this.getKey("__apikey");
 
-        ConnectorDB cdb = new ConnectorDB("",apikey,server);
-
+        ConnectorDB cdb = new ConnectorDB("", apikey, server);
 
         try {
 
@@ -333,31 +327,30 @@ public class DatapointCache extends SQLiteOpenHelper {
                 throw new Exception("Devices not equal");
             }
 
-
             // OK - we're good to go!
-
 
             SQLiteDatabase db = this.getWritableDatabase();
 
             //For each stream in database
-            Cursor res = db.rawQuery("SELECT streamname FROM streams", new String[]{});
+            Cursor res = db.rawQuery("SELECT streamname FROM streams", new String[] {});
             int resultcount = res.getCount();
-            if (resultcount ==0 ) {
-                Log.i(TAG,"No streams to sync");
+            if (resultcount == 0) {
+                Log.i(TAG, "No streams to sync");
                 return true;
             }
 
-            for (int i =0; i<resultcount; i++) {
+            for (int i = 0; i < resultcount; i++) {
                 res.moveToNext();
                 String streamname = res.getString(0);
 
                 Log.v(TAG, "Syncing stream " + streamname);
 
-
                 // Get the datapoints for the stream - and don't include any weird future datapoints if they exist
                 double queryTime = ((double) System.currentTimeMillis()) / 1000.0;
 
-                Cursor dta = db.rawQuery("SELECT timestamp,data FROM cache WHERE streamname=? AND timestamp <=? ORDER BY timestamp ASC;", new String[]{streamname, Double.toString(queryTime)});
+                Cursor dta = db.rawQuery(
+                        "SELECT timestamp,data FROM cache WHERE streamname=? AND timestamp <=? ORDER BY timestamp ASC;",
+                        new String[] { streamname, Double.toString(queryTime) });
                 int dtacount = dta.getCount();
 
                 if (dtacount > 0) {
@@ -366,8 +359,10 @@ public class DatapointCache extends SQLiteOpenHelper {
                     } catch (RequestFailedException ex) {
                         // The request failed. This is presumably because the stream doesn't exist.
                         // therefore, we try creating it!
-                        Log.w(TAG, "Stream does not exist: " + streamname + " because error was " + ex.response.msg+". Creating stream.");
-                        Cursor streamcursor = db.rawQuery("SELECT * FROM streams WHERE streamname=?", new String[]{streamname});
+                        Log.w(TAG, "Stream does not exist: " + streamname + " because error was " + ex.response.msg
+                                + ". Creating stream.");
+                        Cursor streamcursor = db.rawQuery("SELECT * FROM streams WHERE streamname=?",
+                                new String[] { streamname });
                         if (!streamcursor.moveToFirst()) {
                             throw new Exception("STREAM DOES NOT EXIST IN DATABASE!");
                         }
@@ -379,10 +374,8 @@ public class DatapointCache extends SQLiteOpenHelper {
                         s.setDescription(streamcursor.getString(streamcursor.getColumnIndex("description")));
                         streamcursor.close();
 
-
                         cdb.createStream(devicename + "/" + streamname, s);
                     }
-
 
                     Log.i(TAG, "Writing " + dtacount + " datapoints to " + streamname);
 
@@ -397,7 +390,7 @@ public class DatapointCache extends SQLiteOpenHelper {
                     // Now see if there exists a newer timestamp for the stream
                     double streamtime = cdb.getMostRecentTimestamp(devicename + "/" + streamname);
                     if (streamtime > oldtime) {
-                        Log.w(TAG,"Stream on server has newer timestamps! Skipping until time!");
+                        Log.w(TAG, "Stream on server has newer timestamps! Skipping until time!");
                         oldtime = streamtime;
                     }
 
@@ -421,12 +414,13 @@ public class DatapointCache extends SQLiteOpenHelper {
                     totaldatas = totaldatas.substring(0, totaldata.length() - 1) + "]";
 
                     if (totaldatas.length() > 1) {
-                        cdb.insertJson(devicename + "/" + streamname,totaldatas);
+                        cdb.insertJson(devicename + "/" + streamname, totaldatas);
 
                         //Now delete the data from the cache
-                        db.execSQL("DELETE FROM cache WHERE streamname=? AND timestamp <=?",new Object[]{streamname, oldtime});
+                        db.execSQL("DELETE FROM cache WHERE streamname=? AND timestamp <=?",
+                                new Object[] { streamname, oldtime });
 
-                        setKey(keyname, Double.toString(oldtime),null);
+                        setKey(keyname, Double.toString(oldtime), null);
                     }
 
                 }
@@ -437,7 +431,7 @@ public class DatapointCache extends SQLiteOpenHelper {
             return false;
         }
 
-        Log.v(TAG,"Sync successful - " + Integer.toString(size()) + " datapoints left");
+        Log.v(TAG, "Sync successful - " + Integer.toString(size()) + " datapoints left");
         return true;
     }
 }
