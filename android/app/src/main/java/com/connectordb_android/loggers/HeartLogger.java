@@ -22,7 +22,7 @@ public class HeartLogger extends GoogleFitLogger {
         //so I did it the only way I could figure out: brute force. TL;DR: There is probably a better way of reading datapoints...
         String data = "";
         for (Field field : dp.getDataType().getFields()) {
-            if (field.getName().equals("heart_rate")) {
+            if (field.getName().equals("bpm")) {
                 data += dp.getValue(field);
             }
         }
