@@ -56,7 +56,7 @@ public class DatapointCache extends SQLiteOpenHelper {
 
         long syncenabled = 0;
         try {
-            syncenabled = Long.parseLong(this.getKey("syncenabled"));
+            syncenabled = Long.parseLong(this.getKey("syncenabled",null));
         } catch (NumberFormatException nfe) {
         }
 
@@ -83,26 +83,45 @@ public class DatapointCache extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO kv VALUES ('__apikey','');");
 
         // The default synchronization period is 20 minutes, but sync is disabled
-        db.execSQL("INSERT INTO kv VALUES ('syncperiod','1200');");
+        db.execSQL("INSERT INTO kv VALUES ('syncperiod','1200000');");
         db.execSQL("INSERT INTO kv VALUES ('syncenabled','0');"); // Sync is disabled by default
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.w(TAG, "Upgrading Cache - deleting old tables...");
+        Log.w(TAG, "Upgrading Cache...");
+        // Get the old values that should be moved over
+        String syncenabled = this.getKey("syncenabled", db);
+        String server = this.getKey("server", db);
+        String devicename = this.getKey("devicename", db);
+        String apikey = this.getKey("__apikey", db);
+        String syncperiod = this.getKey("syncperiod",db);
+
+        // Drop the tables and rebuild them
         db.execSQL("DROP TABLE IF EXISTS cache;");
         db.execSQL("DROP TABLE IF EXISTS streams;");
         db.execSQL("DROP TABLE IF EXISTS kv;");
         onCreate(db);
+
+        // Set the values that we're moving over
+        setKey("server", server, db);
+        setKey("devicename", devicename, db);
+        setKey("apikey", apikey, db);
+        setKey("syncenabled", syncenabled, db);
+        setKey("syncperiod",syncperiod,db);
+
+        // Note: this loses the streams that are to be logged!
     }
 
     /**
      * getKey returns the value for the given key from the KV store.
      * @param key
+     * @param db optional database to use (for setting in transactions)
      * @return the value - empty string if DNE
      */
-    public String getKey(String key) {
-        SQLiteDatabase db = this.getReadableDatabase();
+    public String getKey(String key, SQLiteDatabase db) {
+        if (db == null)
+            db = this.getReadableDatabase();
         Cursor res = db.rawQuery("SELECT value FROM kv WHERE key=?;", new String[] { key });
         if (res.getCount() == 0) {
             return "";
@@ -234,7 +253,7 @@ public class DatapointCache extends SQLiteOpenHelper {
 
     public void startSyncWait() {
 
-        long waittime = Long.parseLong(this.getKey("syncperiod"));
+        long waittime = Long.parseLong(this.getKey("syncperiod",null));
 
         if (waittime > 0) {
             Log.v(TAG, "Setting next sync in " + waittime);
@@ -265,7 +284,7 @@ public class DatapointCache extends SQLiteOpenHelper {
      * @return Whether or not background synchronization is currently enabled
      */
     public synchronized boolean getSyncEnabled() {
-        return this.getKey("syncenabled").equals("1");
+        return this.getKey("syncenabled",null).equals("1");
     }
 
     /**
@@ -273,7 +292,7 @@ public class DatapointCache extends SQLiteOpenHelper {
      * @return The time is seconds between sync attempts if sync is enabled
      */
     public long getSyncTime() {
-        return Long.parseLong(this.getKey("syncperiod"));
+        return Long.parseLong(this.getKey("syncperiod",null));
     }
 
     public void bgSync() {
@@ -314,9 +333,9 @@ public class DatapointCache extends SQLiteOpenHelper {
             iter.next().preSync();
         }
 
-        String server = this.getKey("server");
-        String devicename = this.getKey("devicename");
-        String apikey = this.getKey("__apikey");
+        String server = this.getKey("server",null);
+        String devicename = this.getKey("devicename",null);
+        String apikey = this.getKey("__apikey",null);
 
         ConnectorDB cdb = new ConnectorDB("", apikey, server);
 
@@ -383,7 +402,7 @@ public class DatapointCache extends SQLiteOpenHelper {
                     double oldtime = 0;
                     String keyname = "sync_oldtime_" + streamname;
                     try {
-                        oldtime = Double.parseDouble(getKey(keyname));
+                        oldtime = Double.parseDouble(getKey(keyname,null));
                     } catch (NumberFormatException nfe) {
                     }
 

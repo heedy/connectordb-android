@@ -120,7 +120,7 @@ public abstract class BaseLogger {
      * @return the key's value, and "" if it doesn't exist
      */
     protected String kvGet(String key) {
-        return DatapointCache.get(context).getKey(name + "_"+key);
+        return DatapointCache.get(context).getKey(name + "_"+key,null);
     }
 
     /**
