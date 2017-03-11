@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.wifi.SupplicantState;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
@@ -31,6 +34,7 @@ public class DatapointCache extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 4;
     public static final String TAG = "DatapointCache";
     public static final String DATABASE_NAME = "DatapointCache.db";
+    public Context context;
 
     //The class is used as a singleton in the application
     private static DatapointCache datapointCache;
@@ -53,6 +57,7 @@ public class DatapointCache extends SQLiteOpenHelper {
      */
     public DatapointCache(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
 
         long syncenabled = 0;
         try {
@@ -163,6 +168,37 @@ public class DatapointCache extends SQLiteOpenHelper {
     }
 
     /**
+     * The ssid of the currently connected network.
+     */
+    public String getSSID() {
+        WifiManager wifiManager = (WifiManager) context.getSystemService (Context.WIFI_SERVICE);
+        WifiInfo info = wifiManager.getConnectionInfo ();
+        if (info.getSupplicantState() == SupplicantState.COMPLETED) {
+            String ssid = info.getSSID();
+            // https://code.google.com/p/android/issues/detail?id=43336
+            if (ssid.equals("0x") || ssid.equals("<unknown ssid>")) {
+                return "";
+            }
+            return ssid;
+        }
+        return "";
+    }
+
+    /**
+     * Here, you can set/get the SSID which is required
+     * for a sync to happen. If connected to a different network,
+     * the app will not sync. If the ssid is an empty string,
+     * the app will always sync
+     * @param ssid
+     */
+    public void setSyncSSID(String ssid) {
+        this.setKey("ssid_sync",ssid,null);
+    }
+    public String getSyncSSID() {
+        return this.getKey("ssid_sync",null);
+    }
+
+    /**
      * ensureStream adds the stream to the DatapointCache. This will make the stream be created
      * if it doesn't exist, and synced to ConnectorDB
      *
@@ -243,7 +279,13 @@ public class DatapointCache extends SQLiteOpenHelper {
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
-                    DatapointCache.this.sync();
+                    String syncSSID = getSyncSSID();
+                    String curSSID = getSSID();
+                    if (!syncSSID.equals(curSSID) && !syncSSID.isEmpty()) {
+                        Log.i(TAG,"Not syncing. Connected to " + curSSID + " but " + syncSSID + " is required.");
+                    } else {
+                        DatapointCache.this.sync();
+                    }
                     DatapointCache.this.startSyncWait();
                     return null;
                 }

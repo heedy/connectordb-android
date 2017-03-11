@@ -95,6 +95,7 @@ public class LoggingModule extends ReactContextBaseJavaModule {
         WritableMap info = Arguments.createMap();
         info.putBoolean("enabled",DatapointCache.get(context).getSyncEnabled());
         info.putInt("time",(int)DatapointCache.get(context).getSyncTime());
+        info.putString("ssid",DatapointCache.get(context).getSyncSSID());
         promise.resolve(info);
     }
 
@@ -131,5 +132,20 @@ public class LoggingModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void clear() {
         DatapointCache.get(context).clearCache();
+    }
+
+    @ReactMethod
+    public void getSSID(Promise promise) {
+        promise.resolve(DatapointCache.get(context).getSSID());
+    }
+
+    @ReactMethod
+    public void getSyncSSID(Promise promise) {
+        promise.resolve(DatapointCache.get(context).getSyncSSID());
+    }
+
+    @ReactMethod
+    public void setSyncSSID(String ssid) {
+        DatapointCache.get(context).setSyncSSID(ssid);
     }
 }

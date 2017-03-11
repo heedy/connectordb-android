@@ -59,3 +59,12 @@ export function bgSync(enabled) {
     // We temporarily use a constant time. TODO: make this a user-accessible function
     return { type: "SET_SYNC_ENABLED", value: enabled };
 }
+
+export function setSSID(enabled) {
+    // If enabled, we set the SSID to the current SSID
+    if (enabled) {
+        return { type: "SET_CURRENT_SSID" };
+    } else {
+        return { type: "SET_SSID", value: "" };
+    }
+}

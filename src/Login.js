@@ -41,15 +41,18 @@ const Main = ({ state, actions }) => (
                 <TextInput style={{ flex: 1 }} placeholder="Server" autoCorrect={false} keyboardType="email-address" value={state.login.server}
                     onChangeText={(s) => actions.setLogin({ server: s })} />
             </View>
+            <View style={{ flexDirection: "row", flex: 1, paddingTop: 20 }}>
+                <Switch style={{ marginBottom: 10 }} value={state.settings.sync.ssid != ""} onValueChange={(s) => actions.setSSID(s)} />
+                <Text style={{ paddingTop: 5, paddingLeft: 10, paddingRight: 40 }}>{state.settings.sync.ssid == "" ? "Only sync when connected to current wifi network (use if running ConnectorDB on local network)" :
+                    "Only sync when connected to " + state.settings.sync.ssid}</Text>
+            </View>
             <View style={{ paddingTop: 20 }}>
                 <Button onPress={actions.login} title="Log In"
                     color='#005c9e' />
             </View>
         </View>
-
         <View style={{ height: 30 }}>
         </View>
-
     </ScrollView>
 );
 
@@ -65,6 +68,10 @@ const Main = ({ state, actions }) => (
             <View style={{ flexDirection: "row", flex: 1, paddingTop: 20 }}>
                 <Switch style={{ marginBottom: 10 }} value={state.login.localnetwork} onValueChange={(s) => actions.setLogin({ localnetwork: s })} />
                 <Text style={{ paddingTop: 5, paddingLeft: 10 }}>Only sync when on this wifi network</Text>
+            </View>
+            <View style={{ flexDirection: "row", flex: 1, paddingTop: 10 }}>
+                <Switch style={{ marginBottom: 10 }} value={state.login.localnetwork} onValueChange={(s) => actions.setLogin({ localnetwork: s })} />
+                <Text style={{ paddingTop: 5, paddingLeft: 10 }}>Only sync on wifi</Text>
             </View>
         </View> -->
 */

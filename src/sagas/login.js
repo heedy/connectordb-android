@@ -182,8 +182,10 @@ export function* deviceLogin(action) {
     // ...and disable the loading screen.
     yield put({ type: "LOAD_FINISHED", value: true });
 
-    // Finally, turn on autosync
+    // Finally, turn on autosync, and by default, enable sync on current network
+    // if it exists
     yield put({ type: "SET_SYNC_ENABLED", value: true });
+    // yield put({ type: "SET_CURRENT_SSID" });
 }
 
 import { setCred, setSync } from '../logging.js';

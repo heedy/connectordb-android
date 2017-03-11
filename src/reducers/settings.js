@@ -1,7 +1,8 @@
 const InitialState = {
     loggers: {},
     sync: {
-        enabled: false
+        enabled: false,
+        ssid: ""
         //time: 20 * 60
     }
 };
@@ -24,6 +25,14 @@ export default function reducer(state = InitialState, action) {
                 sync: {
                     ...state.sync,
                     enabled: action.value
+                }
+            };
+        case 'SET_SSID':
+            return {
+                ...state,
+                sync: {
+                    ...state.sync,
+                    ssid: action.value
                 }
             };
         case 'LOGGER_ENABLED':

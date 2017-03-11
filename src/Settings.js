@@ -18,6 +18,11 @@ const Render = ({ state, actions }) => (
                 <Switch style={{ marginBottom: 10 }} value={state.settings.sync.enabled} onValueChange={(s) => actions.bgSync(s)} />
                 <Text style={{ paddingTop: 5, paddingLeft: 10 }}>Sync to ConnectorDB in background</Text>
             </View>
+            <View style={{ flexDirection: "row", flex: 1, paddingTop: 10, paddingBottom: 30 }}>
+                <Switch style={{ marginBottom: 10 }} value={state.settings.sync.ssid !== ""} onValueChange={(s) => actions.setSSID(s)} />
+                <Text style={{ paddingTop: 5, paddingLeft: 10, paddingRight: 40 }}>{state.settings.sync.ssid == "" ? "Only sync when connected to current wifi network" :
+                    "Only sync when connected to " + state.settings.sync.ssid}</Text>
+            </View>
             <Button onPress={actions.sync} title="Sync Now" accessibilityLabel="Write cached data to ConnectorDB server" />
         </View>
         <View style={styles.card}>

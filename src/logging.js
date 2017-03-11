@@ -14,7 +14,7 @@ getLoggers() - promise returns a map of all available loggers.
 **/
 var Logger = NativeModules.ConnectorDBLogger;
 
-console.log(Logger);
+// console.log(Logger);
 
 export function setEnabled(key, value) {
     Logger.setEnabled(key, value);
@@ -37,4 +37,16 @@ export function setCred(server, devicename, apikey) {
 
 export function getSyncInfo() {
     return Logger.getSyncInfo();
+}
+
+export function getSSID() {
+    return Logger.getSSID();
+}
+
+export function getSyncSSID() {
+    return Logger.getSyncSSID();
+}
+
+export function setSyncSSID(ssid) {
+    Logger.setSyncSSID(ssid);
 }

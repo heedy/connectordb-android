@@ -8,6 +8,7 @@
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <!-- ADD PERMISSIONS FOR LOGGING EXTENSIONS HERE -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>   <!-- LocationLogger -->
@@ -51,6 +52,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="WifiManager.NETWORK_STATE_CHANGED_ACTION" />
             </intent-filter>
         </receiver>
     </application>

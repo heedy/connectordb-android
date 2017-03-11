@@ -8,14 +8,16 @@ This is the ConnectorDB android app. While our usage of React Native enables IOS
 
 ## Data Gathering
 
-The app gathers the following in the background:
+The app gathers the following in the background by default:
 
 - [x] Steps
 - [x] Activities
 - [x] Plug in events
 - [x] Location (GPS)
 - [x] Screen on/off
-- [ ] Active App
+- [ ] Active App (TODO)
+
+There are additional loggers, not shown here, which are not enabled by default.
 
 <img src="https://raw.githubusercontent.com/connectordb/connectordb-android/master/screenshot.png" width="300"/>
 
@@ -79,7 +81,9 @@ You'll need to use `com.connectordb_android` for the package name, and set up yo
 ## Adding New Loggers
 
 The app was made with extensibility in mind. `android/app/src/main/java/com/connectordb_android/loggers/` contains all of the data-gathering code. To create a new logger:
-- Extend `BaseLogger` or `GoogleFitLogger` if using google fit data. Use the existing loggers as examples on how this is done
+- Extend `BaseLogger` to do your logging. Use the existing loggers as a reference. You can also extend the following convenience classes:
+    - `GoogleFitLogger` if using google fit data. It automatically takes care of all syncing/data gathering
+    - `ContentProviderLogger` if using a content provider for your data (for example, gathering data from another app).
 - Add your logger in `LoggerService.java`, so it is started automatically
 - Set up any permissions you might need for your logger
     - `android/app/src/main/AndroidManifest.xml`: Any permissions you use need to be added here
@@ -91,8 +95,6 @@ The app was made with extensibility in mind. `android/app/src/main/java/com/conn
 ## Improving the UI
 
 You can directly follow the instructions given in the react native docs. You don't even need to run android studio, as the entire UI is in javascript. If the code seems alien, please look at http://redux.js.org/docs/basics/UsageWithReact.html for a tutorial in React Redux.
-
-I am not a designer, so any help would be greatly appreciated.
 
 
 ## Attribution
