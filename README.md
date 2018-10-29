@@ -50,14 +50,22 @@ react-native start
 
 Once the server boots up, you can run the app in debug mode from android studio
 
+### Logging Error
 
-Finally, since the menu isn't available in the android virtual device, you'll need to run the following and enable live reload, as well as possibly debug in chrome:
+Once you start running the app, you will come across an error connecting to google APIs right after it turns on. This is because the app expects to be able to connect to google's fitness apis (from which it gathers several metrics). You will need to create an OAuth API key for your app as seen here: https://developers.google.com/fit/android/get-api-key
+
+You'll need to use `com.connectordb_android` for the package name, and set up your own debug/release keys to gain api access.
+
+### Other Details
+
+Since the menu isn't available in the android virtual device, you'll need to run the following and enable live reload, as well as possibly debug in chrome:
 
 ```
 adb shell input keyevent 82
 ```
 
 If running on an external device, you'll need to use adb to forward the debug port:
+
 ```bash
 adb reverse tcp:8081 tcp:8081
 ```
@@ -70,32 +78,25 @@ Follow the instructions [here](https://facebook.github.io/react-native/docs/sign
 cd android && ./gradlew assembleRelease
 ```
 
-### Logging Error
-
-Once you start running the app, you might come across a logging error right after it turns on. This is because the app expects to be able to connect to google's fitness apis (from which it gathers several metrics). You will need to create an OAuth API key for your app as seen here: https://developers.google.com/fit/android/get-api-key
-
-You'll need to use `com.connectordb_android` for the package name, and set up your own debug/release keys to gain api access.
-
 # Extending
 
 ## Adding New Loggers
 
 The app was made with extensibility in mind. `android/app/src/main/java/com/connectordb_android/loggers/` contains all of the data-gathering code. To create a new logger:
+
 - Extend `BaseLogger` to do your logging. Use the existing loggers as a reference. You can also extend the following convenience classes:
-    - `GoogleFitLogger` if using google fit data. It automatically takes care of all syncing/data gathering
-    - `ContentProviderLogger` if using a content provider for your data (for example, gathering data from another app).
+  - `GoogleFitLogger` if using google fit data. It automatically takes care of all syncing/data gathering
+  - `ContentProviderLogger` if using a content provider for your data (for example, gathering data from another app).
 - Add your logger in `LoggerService.java`, so it is started automatically
 - Set up any permissions you might need for your logger
-    - `android/app/src/main/AndroidManifest.xml`: Any permissions you use need to be added here
-    - `src/permissions.js`: If your logger uses [dangerous permissions](https://developer.android.com/guide/topics/permissions/requesting.html#normal-dangerous), you need to add the permission in this file too
-    - `android/app/src/main/java/com/connectordb_android/loggers/GoogleApiSingleton.java`: If you use any google APIs, you will need to add the API to the API singleton
-    
+  - `android/app/src/main/AndroidManifest.xml`: Any permissions you use need to be added here
+  - `src/permissions.js`: If your logger uses [dangerous permissions](https://developer.android.com/guide/topics/permissions/requesting.html#normal-dangerous), you need to add the permission in this file too
+  - `android/app/src/main/java/com/connectordb_android/loggers/GoogleApiSingleton.java`: If you use any google APIs, you will need to add the API to the API singleton
 - Submit a pull request! We'd love to include a variety of loggers (with only some on by default)
 
 ## Improving the UI
 
 You can directly follow the instructions given in the react native docs. You don't even need to run android studio, as the entire UI is in javascript. If the code seems alien, please look at http://redux.js.org/docs/basics/UsageWithReact.html for a tutorial in React Redux.
-
 
 ## Attribution
 

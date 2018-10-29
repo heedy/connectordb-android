@@ -10,12 +10,14 @@
     "babel-plugin-transform-remove-console": "^6.8.1",
     "buffer": "^5.0.5",
     "connectordb": "0.0.11",
-    "react": "15.4.2",
-    "react-native": "0.42.0",
-    "react-native-linear-gradient": "^2.0.0",
-    "react-native-scrollable-tab-view": "^0.7.2",
+    "prop-types": "^15.6.2",
+    "react": "^16.6.0",
+    "react-create-class": "^1.0.0",
+    "react-native": "^0.57.4",
+    "react-native-linear-gradient": "^2.4.2",
+    "react-native-scrollable-tab-view": "^0.9.0",
     "react-native-star-rating": "^1.0.7",
-    "react-native-vector-icons": "^4.0.0",
+    "react-native-vector-icons": "^6.0.2",
     "react-redux": "^5.0.3",
     "redux": "^3.6.0",
     "redux-logger": "^2.8.2",
@@ -27,7 +29,7 @@
     "babel-jest": "19.0.0",
     "babel-preset-react-native": "1.9.1",
     "jest": "19.0.2",
-    "react-test-renderer": "15.4.2"
+    "react-test-renderer": "^16.6.0"
   },
   "jest": {
     "preset": "react-native"

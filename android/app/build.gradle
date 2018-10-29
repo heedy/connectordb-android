@@ -33,6 +33,13 @@ import com.android.build.OutputFile
  *   // bundleInPaidRelease: true,
  *   // bundleInBeta: true,
  *
+ *   // whether to disable dev mode in custom build variants (by default only disabled in release)
+ *   // for example: to disable dev mode in the staging build type (if configured)
+ *   devDisabledInStaging: true,
+ *   // The configuration property can be in the following formats
+ *   //         'devDisabledIn${productFlavor}${buildType}'
+ *   //         'devDisabledIn${buildType}'
+ *
  *   // the root of your project, i.e. where "package.json" lives
  *   root: "../../",
  *
@@ -58,12 +65,16 @@ import com.android.build.OutputFile
  *   inputExcludes: ["android/**", "ios/**"],
  *
  *   // override which node gets called and with what additional arguments
- *   nodeExecutableAndArgs: ["node"]
+ *   nodeExecutableAndArgs: ["node"],
  *
  *   // supply additional arguments to the packager
  *   extraPackagerArgs: []
  * ]
  */
+
+project.ext.react = [
+    entryFile: "index.js"
+]
 
 apply from: "../../node_modules/react-native/react.gradle"
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
@@ -84,8 +95,8 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     signingConfigs {
         release {
@@ -100,10 +111,10 @@ android {
 
     defaultConfig {
         applicationId "com.connectordb_android"
-        minSdkVersion 16
-        targetSdkVersion 22
-        versionCode 8
-        versionName "0.2.0"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 10
+        versionName "0.2.1"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -139,23 +150,24 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-vector-icons')
-    compile project(':react-native-linear-gradient')
-    compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:+"  // From node_modules
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
+    implementation "com.facebook.react:react-native:+" // From node_modules
+    //implementation ("com.facebook.react:react-native:0.57.4") { force = true }
+
+    api project(':react-native-vector-icons')
+    api project(':react-native-linear-gradient')
 
     // These two are needed for connectordb library, which is not yet synced to maven
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    api 'com.squareup.okhttp3:okhttp:3.4.1'
     // http://mvnrepository.com/artifact/com.google.code.gson/gson
-    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.0'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.0'
 
     // Add dependencies necessary for loggers HERE, as well as a comment specifying which logger uses them.
+    implementation 'com.google.android.gms:play-services-auth:16.0.0'
 
-    compile 'com.google.android.gms:play-services-location:10.2.0'  // LocationLogger
-    compile 'com.google.android.gms:play-services-fitness:10.2.0'   //
-
-
+    implementation 'com.google.android.gms:play-services-location:16.0.0'  // LocationLogger
+    implementation 'com.google.android.gms:play-services-fitness:16.0.0'   //
 }
 
 // Run this once to be able to run the application with BUCK

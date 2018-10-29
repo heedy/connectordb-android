@@ -83,7 +83,6 @@ public class GoogleApiSingleton implements
         apiClient = new GoogleApiClient.Builder(c)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-
                 // Add the google APIs you want to use HERE, and a comment specifying which logger uses them
                 .addApi(LocationServices.API)                       // LocationLogger
                 .addApi(Fitness.RECORDING_API)
